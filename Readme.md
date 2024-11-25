@@ -1,4 +1,4 @@
-Název hry: Záchrana ztracené výpravy
+Název hry: **Záchrana ztracené výpravy**
 
 Žánr: Dobrodružství / Survival
 
