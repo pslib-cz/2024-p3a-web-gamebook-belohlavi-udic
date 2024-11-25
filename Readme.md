@@ -23,10 +23,7 @@ Hráč volí mezi různými možnostmi, které ovlivňují jeho postup a výsled
 Zvolit kratší, ale nebezpečnější cestu.
 Obejít překážku a ztratit čas.
 Riskovat souboj s nebezpečným zvířetem.
-Hádanky:
 
-Logické úkoly zahrnující hieroglyfy, skládačky mapy nebo dešifrování zápisků z deníku.
-Správné řešení posune hráče dál, zatímco chyby mohou aktivovat pasti.
 Souboje:
 
 Hráč může narazit na divoká zvířata nebo nepřátelské členy džungle.
@@ -49,17 +46,8 @@ Vizualizace důležitých prvků (např. mapy, předměty, zápisky).
 Datová logika:
 
 Permanentní data: Struktura herního světa (lokace, přechody, objekty).
-Dynamická data: Aktuální stav hráče (statistiky, vybavení, pozice).
-Herní obsah
-Struktura hry:
 
-Lokace obsahují popis situace, možnosti postupu a specifické podmínky pro další postup (např. potřebné předměty).
-Mechaniky: sběr předmětů, ztráta/zisk zdraví, logické hádanky, rozhodovací volby.
 Příběh:
 
 Logický vývoj událostí s atmosférou džungle.
 Možnost více zakončení podle hráčových rozhodnutí.
-Grafika a atmosféra:
-
-Styl odpovídající dobrodružnému survivalu v džungli.
-Použití generované grafiky pro lokace (např. mapy, symboly, popisy situací).
