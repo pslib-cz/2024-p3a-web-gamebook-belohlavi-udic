@@ -1,5 +1,3 @@
-Návrh příběhu
-
 Název hry: Záchrana ztracené výpravy
 
 Žánr: Dobrodružství / Survival
