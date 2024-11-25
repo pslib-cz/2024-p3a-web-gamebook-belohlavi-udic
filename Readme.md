@@ -1,6 +1,9 @@
 Návrh příběhu
+
 Název hry: Záchrana ztracené výpravy
+
 Žánr: Dobrodružství / Survival
+
 Stručná synopse:
 Hráč se vydává do neprobádané džungle, aby našel ztracenou vědeckou výpravu. Cesta je plná nástrah, nepřátel, logických hádanek a těžkých rozhodnutí. Na každém kroku hrozí nebezpečí, a hráč musí využít svůj důvtip, odvahu a dostupné vybavení, aby přežil a našel členy výpravy. Příběh nabízí různé cesty a více zakončení podle hráčových rozhodnutí.
 
