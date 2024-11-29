@@ -27,5 +27,5 @@
   - **Dynamická data:** Stav hry a hráče, ukládání postupu.  
 
 - **Možnosti implementace:**  
-  - **Serverová databáze:** Pro sdílený přístup odkudkoliv.  
+  - **Serverová databáze:** Pro sdílený přístup odkudkoliv. (SQLite)
   - **Lokální úložiště:** Data jsou ukládána pouze na zařízení hráče.
