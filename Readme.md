@@ -35,3 +35,4 @@ Hráč začíná v nouzovém táboře a musí si najít cestu ven. Každé rozho
 - Dva možné konce:  
   - **Útěk z džungle** – přežití a záchrana.  
   - **Selhání** – smrt v džungli.  
+### **Figma:** https://www.figma.com/design/FLXRbVvKqunE1ArfByx997/Untitled?node-id=0-1&t=9ycvGo4h9WxBGhnQ-1
