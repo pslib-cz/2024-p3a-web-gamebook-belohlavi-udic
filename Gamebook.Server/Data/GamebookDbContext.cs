@@ -6,10 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Gamebook.Server.Data
 {
-    public class GamebookDbContext: IdentityDbContext<User, Models.Role, string>
+    public class GamebookDbContext : IdentityDbContext<User, Models.Role, string>
     {
         public DbSet<Models.File> Files { get; set; } = null!;
         public override DbSet<User> Users { get; set; } = null!;
+        public DbSet<Room> Rooms { get; set; } = null!;
+        public DbSet<GameState> GameStates { get; set; } = null!;
+        public DbSet<Models.Action> Actions { get; set; } = null!;
+
         public GamebookDbContext(DbContextOptions<GamebookDbContext> options) : base(options)
         {
         }
@@ -17,6 +21,8 @@ namespace Gamebook.Server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Existing roles and users seeding logic
             var adminRoleId = Guid.NewGuid().ToString();
             var authorRoleId = Guid.NewGuid().ToString();
             modelBuilder.Entity<Models.Role>(options =>
@@ -53,8 +59,7 @@ namespace Gamebook.Server.Data
                         SecurityStamp = string.Empty
                     }
                 );
-            }
-            );
+            });
             modelBuilder.Entity<IdentityUserRole<string>>(entity =>
             {
                 entity.HasKey(x => new { x.RoleId, x.UserId });
@@ -70,6 +75,35 @@ namespace Gamebook.Server.Data
                         UserId = mainAdminId
                     }
                 );
+            });
+
+            // New tables for game mechanics
+            modelBuilder.Entity<Room>(entity =>
+            {
+                entity.HasKey(r => r.RoomId);
+                entity.Property(r => r.Name).IsRequired();
+                entity.HasMany(r => r.Actions)
+                      .WithOne(a => a.TargetRoom)
+                      .HasForeignKey(a => a.TargetRoomId);
+            });
+
+            modelBuilder.Entity<GameState>(entity =>
+            {
+                entity.HasKey(gs => gs.GameStateId);
+                entity.HasOne(gs => gs.CurrentRoom)
+                      .WithMany()
+                      .HasForeignKey(gs => gs.CurrentRoomId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Models.Action>(entity =>
+            {
+                entity.HasKey(a => a.ActionId);
+                entity.Property(a => a.ActionType).IsRequired();
+                entity.HasOne(a => a.TargetRoom)
+                      .WithMany()
+                      .HasForeignKey(a => a.TargetRoomId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }

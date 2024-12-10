@@ -24,6 +24,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy(Policy.Admin, policy => policy.RequireRole(Gamebook.Server.Constants.Role.Admin));
     options.AddPolicy(Policy.Author, policy => policy.RequireRole(Gamebook.Server.Constants.Role.Author));
 });
+
+builder.Services.AddDbContext<GamebookDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Identita
 builder.Services.AddIdentityApiEndpoints<User>(options =>
 {
