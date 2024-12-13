@@ -20,7 +20,7 @@ namespace Gamebook.Server.Controllers
             _logger = logger;
         }
 
-        // GET: api/Files
+  
         [HttpGet]
         public async Task<ActionResult<ListResult<FileListVM>>> GetFiles(string? name, string? ownerId, string? type, string? ownerName, FilesOrderBy? order = FilesOrderBy.Id, int? page = null, int? size = null)
         {
@@ -77,7 +77,7 @@ namespace Gamebook.Server.Controllers
             });
         }
 
-        // GET: api/Files/5
+      
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.File>> GetFile(Guid id)
         {
@@ -91,7 +91,7 @@ namespace Gamebook.Server.Controllers
             return file;
         }
 
-        // GET: api/Files/5/download
+      
         [HttpGet("{id}/download")]
         public async Task<ActionResult> DownloadFile(Guid id)
         {
@@ -105,7 +105,7 @@ namespace Gamebook.Server.Controllers
             return File(file.Content, file.ContentType, file.Name);
         }
         
-        // POST: api/Files
+  
         [HttpPost]
         [Authorize(Policy = Policy.Author)]
         [Consumes("multipart/form-data")]

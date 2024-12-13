@@ -7,10 +7,10 @@ using Gamebook.Server.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logování
+// Logov?n?
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console() // Logování do konzole (volitelné)
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) // Logování do souboru
+    .WriteTo.Console() // Logov?n? do konzole (voliteln?)
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) // Logov?n? do souboru
     .CreateLogger();
 builder.Host.UseSerilog();
 
@@ -39,7 +39,7 @@ builder.Services.AddIdentityApiEndpoints<User>(options =>
     options.Password.RequireNonAlphanumeric = false;
 })
     .AddEntityFrameworkStores<GamebookDbContext>();
-    //.AddDefaultTokenProviders();
+//.AddDefaultTokenProviders();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

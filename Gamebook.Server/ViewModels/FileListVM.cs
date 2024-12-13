@@ -4,12 +4,12 @@ namespace Gamebook.Server.ViewModels
 {
     public class FileListVM
     {
-        public int FileId { get; set; }
-        public required string Name { get; set; }
-        public required long Size { get; set; }
-        public required string ContentType { get; set; }
-        public required DateTime CreatedAt { get; set; } = DateTime.Now;
+        public Guid FileId { get; set; }
+        public string Name { get; set; }
+        public long Size { get; set; }
+        public string ContentType { get; set; }
+        public DateTime CreatedAt { get; set; }
         public User? CreatedBy { get; set; }
-        public required string CreatedById { get; set; }
+        public string CreatedById { get; set; }
     }
 }

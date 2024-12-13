@@ -2,11 +2,11 @@
 {
     public class GameState
     {
-        public Guid GameStateId { get; set; }
-        public Guid UserId { get; set; }
-        public Guid CurrentRoomId { get; set; }
-        public int HP { get; set; }
-        public virtual Room CurrentRoom { get; set; }
-    }
+        public int ID { get; set; }
+        public int PlayerID { get; set; }
+        public required DateTime Timestamp { get; set; }
+        public required string Data { get; set; }
 
+        public virtual Player Player { get; set; } = null!;
+    }
 }
