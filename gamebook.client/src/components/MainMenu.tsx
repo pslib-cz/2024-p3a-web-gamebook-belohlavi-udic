@@ -1,24 +1,47 @@
+// src/components/MainMenu.tsx
+import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { CLEAR_TOKEN } from '../providers/AuthProvider';
-import { Link } from 'react-router-dom';
+import './MainMenu.css';
 
 const MainMenu = () => {
     const { state, dispatch } = useAuth();
+
     return (
-        <menu>
-            <li><Link to="/">Titulní stránka</Link></li>
-            <li><Link to="/token">Token</Link></li>
-            <li><Link to="/start">Start</Link></li>
-            {!state.token ?
-            <>
-            <li><Link to="/sign-in">Přihlášení</Link></li>
-            <li><Link to="/sign-up">Registrace</Link></li>
-            </>
-            :
-            <button onClick={() => dispatch({ type: CLEAR_TOKEN })}>Odhlásit</button>
-            }  
-        </menu>
+        <nav className="main-menu">
+            <Link to="/" className="menu-brand">
+                GameBook
+            </Link>
+
+            <div className="menu-items">
+                {state.token ? (
+                    <>
+                        <Link to="/game" className="menu-item">
+                            Continue Game
+                        </Link>
+                        <Link to="/start" className="menu-item">
+                            New Game
+                        </Link>
+                        <button
+                            className="menu-button"
+                            onClick={() => dispatch({ type: CLEAR_TOKEN })}
+                        >
+                            Sign Out
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/sign-in" className="menu-item">
+                            Sign In
+                        </Link>
+                        <Link to="/sign-up" className="menu-item">
+                            Sign Up
+                        </Link>
+                    </>
+                )}
+            </div>
+        </nav>
     );
-}
+};
 
 export default MainMenu;

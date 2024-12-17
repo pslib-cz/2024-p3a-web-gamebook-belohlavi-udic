@@ -9,9 +9,9 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\components\Challenge\" />
     <Folder Include="src\hooks\" />
     <Folder Include="src\hocs\" />
     <Folder Include="src\providers\" />
-    <Folder Include="src\pages\" />
   </ItemGroup>
 </Project>

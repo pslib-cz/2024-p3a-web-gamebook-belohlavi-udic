@@ -1,0 +1,45 @@
+.room-view {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.room-title {
+    color: #ffd700;
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.room-description {
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.room-connections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.connection-button {
+    padding: 15px;
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1em;
+}
+
+    .connection-button:hover {
+        transform: translateY(-2px);
+        background-color: #555;
+    }

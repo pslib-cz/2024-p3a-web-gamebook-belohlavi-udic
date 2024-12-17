@@ -1,19 +1,18 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import MainMenu from "../components/MainMenu";
+import '../styles/AppLayout.css';
 
 const AppLayout = () => {
     return (
-        <div>
-            <header>
-                <h1>My App</h1>
-            </header>
-            <nav>
+        <div className="app-layout">
+            <header className="app-header">
                 <MainMenu />
-            </nav>
-            <main>
+            </header>
+            <main className="app-main">
                 <Outlet />
             </main>
         </div>
     );
 }
+
 export default AppLayout;

@@ -1,13 +1,26 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
-const requireAuth = (Component: React.ComponentType) => {
-    return (props: any) => {
+export const requireAuth = <P extends object>(
+    WrappedComponent: React.ComponentType<P>
+) => {
+    return function WithAuthWrapper(props: P) {
         const { state } = useAuth();
+        const navigate = useNavigate();
+
+        useEffect(() => {
+            if (!state.token) {
+                navigate('/sign-in');
+            }
+        }, [state.token, navigate]);
+
         if (!state.token) {
-            return <p>Musíte se přihlásit!</p>;
+            return null;
         }
-        return <Component {...props} />;
+
+        return <WrappedComponent {...props} />;
     };
-}
+};
 
 export default requireAuth;

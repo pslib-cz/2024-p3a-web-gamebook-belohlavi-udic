@@ -1,15 +1,11 @@
-import {
-    createBrowserRouter,
-    RouterProvider,
-  } from "react-router-dom";
-import './App.css';
-import {AuthProvider} from './providers/AuthProvider';
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { AuthProvider } from './providers/AuthProvider';
 import AppLayout from './pages/AppLayout';
 import FrontPage from './pages/FrontPage';
 import SignUpPage from './pages/SignUpPage';
 import SignInPage from './pages/SignInPage';
-import TokenPage from './pages/TokenPage';
-import StartPage from "./pages/StartPage";
+import GamePage from './pages/GamePage';
+import './App.css';
 
 const router = createBrowserRouter([
     {
@@ -29,12 +25,8 @@ const router = createBrowserRouter([
                 element: <SignInPage />
             },
             {
-                path: "token",
-                element: <TokenPage />
-            },
-            {
-                path: "start",
-                element: <StartPage />
+                path: "game",
+                element: <GamePage />
             }
         ]
     }
