@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "../components/common";
 import useAuth from "../hooks/useAuth";
@@ -10,6 +10,15 @@ const SignInPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const { dispatch } = useAuth();
     const navigate = useNavigate();
+
+    // Check localStorage if a token is already there
+    useEffect(() => {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            dispatch({ type: SET_TOKEN, token });
+            navigate('/game');
+        }
+    }, [dispatch, navigate]);
 
     const loginUser = async (email: string, password: string) => {
         setLoading(true);

@@ -1,103 +1,58 @@
-﻿import { useState, useEffect } from 'react';
-import useAuth from '../hooks/useAuth';
-import { requireAuth } from '../hocs/requireAuth';
-import { GameStatus } from '../components/game/GameStatus';
-import { RoomView } from '../components/game/RoomView';
-import { Alert } from '../components/common/Alert/Alert';
-import '../styles/Game.css';
+﻿import { useEffect, useState } from "react";
 
-interface Room {
-    id: number;
-    name: string;
-    description: string;
-}
-
-interface Connection {
-    id: number;
-    roomId1: number;
-    roomId2: number;
-    connectionType: string;
-}
-
-const GamePage = () => {
-    const { state } = useAuth();
-    const [currentRoom, setCurrentRoom] = useState<Room | null>(null);
-    const [connections, setConnections] = useState<Connection[]>([]);
+function GamePage() {
+    const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
+    const [gameStarted, setGameStarted] = useState(false);
 
     useEffect(() => {
-        loadRoomData();
+        const fetchData = async () => {
+            try {
+                const response = await fetch("/current"); 
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`);
+                }
+                const result = await response.json();
+                setData(result);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
-    const loadRoomData = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch('/api/rooms/current', {
-                headers: {
-                    'Authorization': `Bearer ${state.token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to load room data');
-            }
-
-            const data = await response.json();
-            setCurrentRoom(data.room);
-            setConnections(data.connections);
-        } catch (err) {
-            setError('Nepodařilo se načíst herní data');
-        } finally {
-            setLoading(false);
+    const handleStartGame = () => {
+        if (data) {
+            setGameStarted(true);
+            console.log("Game started!", data); 
         }
     };
 
-    const handleMove = async (connectionId: number) => {
-        try {
-            setLoading(true);
-            const response = await fetch(`/api/connections/${connectionId}/move`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${state.token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+    if (loading) return <div>Loading...</div>;
 
-            if (!response.ok) {
-                throw new Error('Failed to move');
-            }
-
-            await loadRoomData();
-        } catch (err) {
-            setError('Nepodařilo se přesunout do další místnosti');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    if (loading) {
-        return <div className="game-loading">Načítám...</div>;
-    }
-
-    if (error) {
-        return <Alert message={error} type="error" />;
-    }
-
-    if (!currentRoom) {
-        return <div className="game-error">Místnost nenalezena</div>;
-    }
+    if (error) return <div>Error: {error}</div>;
 
     return (
-        <div className="game-page">
-            <GameStatus />
-            <RoomView
-                room={currentRoom}
-                connections={connections}
-                onMove={handleMove}
-            />
+        <div style={{ textAlign: "center", marginTop: "50px" }}>
+            <h1>Game Page</h1>
+            {!gameStarted ? (
+                <>
+                    <p>Click the button to start the game!</p>
+                    <button onClick={handleStartGame}>Start Game</button>
+                </>
+            ) : (
+                <div>
+                    <h2>Game Running...</h2>
+                    {}
+                    <pre>{JSON.stringify(data, null, 2)}</pre>
+                </div>
+            )}
         </div>
     );
-};
+}
 
-export default requireAuth(GamePage);
+export default GamePage;

@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useReducer } from 'react';
+import { createContext, FC, PropsWithChildren, useReducer, useEffect } from 'react';
 
 export const SET_TOKEN = 'SET_TOKEN';
 export const CLEAR_TOKEN = 'CLEAR_TOKEN';
@@ -28,7 +28,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 };
 
 const initialState: AuthState = {
-    token: null
+    token: localStorage.getItem('access_token') || null  // load initial token from storage if there is one.
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -38,6 +38,15 @@ export const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
+
+
+    useEffect(() => {
+        if (state.token) {
+            localStorage.setItem('access_token', state.token)
+        } else {
+            localStorage.removeItem('access_token')
+        }
+    }, [state.token]);
 
     return (
         <AuthContext.Provider value={{ state, dispatch }}>

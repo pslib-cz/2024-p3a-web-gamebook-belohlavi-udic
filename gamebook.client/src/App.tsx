@@ -5,6 +5,10 @@ import FrontPage from './pages/FrontPage';
 import SignUpPage from './pages/SignUpPage';
 import SignInPage from './pages/SignInPage';
 import GamePage from './pages/GamePage';
+import StartPage from './pages/StartPage';
+import NotFoundPage from './pages/NotFound';
+import { GameProvider } from './contexts/GameContext'; 
+
 import './App.css';
 
 const router = createBrowserRouter([
@@ -17,6 +21,10 @@ const router = createBrowserRouter([
                 element: <FrontPage />
             },
             {
+                path: "start",
+                element: <GameProvider><StartPage /></GameProvider> 
+            },
+            {
                 path: "sign-up",
                 element: <SignUpPage />
             },
@@ -27,6 +35,10 @@ const router = createBrowserRouter([
             {
                 path: "game",
                 element: <GamePage />
+            },
+            {
+                path: "*",
+                element: <NotFoundPage />
             }
         ]
     }
