@@ -4,20 +4,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Gamebook.Server.Constants;
+using Gamebook.Server.Services; // Add this using
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logov?n?
+// Logování
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console() // Logov?n? do konzole (voliteln?)
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day) // Logov?n? do souboru
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddDbContext<GamebookDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-//builder.Services.AddSingleton<IEmailSender<User>, EmailSender<User>>();
 builder.Services.AddControllers();
 builder.Services.AddAuthorization(options =>
 {
@@ -27,6 +27,9 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddDbContext<GamebookDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register IGameService with its implementation
+builder.Services.AddScoped<IGameService, GameService>();
 
 // Identita
 builder.Services.AddIdentityApiEndpoints<User>(options =>
@@ -59,7 +62,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
+app.UseAuthentication(); // authentication before authorization and mapping controllers
 app.UseAuthorization();
 app.MapGroup("/api/account").MapIdentityApi<User>();
 

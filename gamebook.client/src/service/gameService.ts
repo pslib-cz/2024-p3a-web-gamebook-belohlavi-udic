@@ -1,4 +1,3 @@
-
 interface Room {
     id: number;
     name: string;
@@ -54,9 +53,9 @@ export class GameService {
         });
 
         if (!response.ok) {
-            throw new Error(`API call failed: ${response.statusText}`);
+            const errorData = await response.json();
+            throw new Error(`API call failed: ${response.statusText}, ${errorData.message}`);
         }
-
         return response.json();
     }
 
@@ -92,7 +91,7 @@ export class GameService {
         outcome: string;
         playerHp: number;
     }> {
-        return this.fetchWithAuth(`/challenges/${challengeId}`, {
+        return this.fetchWithAuth(`/challenges/${challengeId}/attempt`, {
             method: 'POST'
         }, token);
     }
@@ -116,7 +115,7 @@ export class GameService {
     }
 
     static async saveGameState(state: Partial<GameState>, token: string): Promise<GameState> {
-        return this.fetchWithAuth('/game-states', {
+        return this.fetchWithAuth('/game-states/save', {
             method: 'POST',
             body: JSON.stringify(state)
         }, token);
@@ -135,9 +134,7 @@ export class GameService {
         initialRoomId: number;
         gameStateId: number;
     }> {
-        return this.fetchWithAuth('/game/start', {
-            method: 'POST'
-        }, token);
+        return this.fetchWithAuth('/players/current', { method: 'GET' }, token);
     }
 
     static async endGame(token: string): Promise<void> {

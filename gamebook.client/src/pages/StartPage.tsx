@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGame } from '../contexts/GameContext';
 import { Alert } from '../components/common';
 import useAuth from "../hooks/useAuth";
+import { GameService } from '../service/gameService';
 
 
 export default function StartPage() {
@@ -21,21 +22,13 @@ export default function StartPage() {
             if (!token) {
                 throw new Error('Not logged in, cannot start a new game');
             }
-
-            const response = await fetch('/api/players/current', {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${token}`
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error('Nepoda?ilo se za?ít novou hru');
+            const data = await GameService.startNewGame(token);
+            if (data && data.initialRoomId) {
+                await loadRoom(data.initialRoomId);
+                navigate(`/room/${data.initialRoomId}`);
+            } else {
+                throw new Error('Could not start new game - missing initial room');
             }
-
-            const data = await response.json();
-            await loadRoom(data.currentRoomID);
-            navigate(`/room/${data.currentRoomID}`);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Nastala neznámá chyba');
         } finally {
@@ -93,7 +86,7 @@ export default function StartPage() {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         />
                                     </svg>
-                                    Naèítání...
+                                    Na?ítání...
                                 </span>
                             ) : (
                                 'Za?ít nové dobrodružství'
@@ -101,7 +94,7 @@ export default function StartPage() {
                         </button>
 
                         <p className="text-gray-500 text-sm">
-                            Pozor: Zaèátek nové hry resetuje tvùj pøedchozí postup.
+                            Pozor: Za?átek nové hry resetuje tv?j p?edchozí postup.
                         </p>
                     </div>
                 </div>
