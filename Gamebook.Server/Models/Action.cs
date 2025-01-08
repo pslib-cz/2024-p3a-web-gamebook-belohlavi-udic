@@ -2,10 +2,9 @@
 {
     public class Action
     {
-        public Guid ActionId { get; set; }
+        public Guid Id { get; set; } // Změna na Id
         public string ActionType { get; set; }
-        public Guid TargetRoomId { get; set; }
+        public Guid RoomId { get; set; } // Změna na RoomId
         public virtual Room TargetRoom { get; set; }
     }
-
 }

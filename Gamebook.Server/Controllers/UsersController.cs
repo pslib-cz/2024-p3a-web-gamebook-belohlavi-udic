@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Role = Gamebook.Server.Models.Role;
 
 namespace Gamebook.Server.Controllers
 {
@@ -14,18 +15,22 @@ namespace Gamebook.Server.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly ILogger<UsersController> _logger;
-        public UsersController(UserManager<User> userManager, ILogger<UsersController> logger)
+        private readonly RoleManager<Role> _roleManager;
+
+        public UsersController(UserManager<User> userManager, ILogger<UsersController> logger, RoleManager<Role> roleManager)
         {
             _userManager = userManager;
             _logger = logger;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
         public async Task<ActionResult<ListResult<UserListVM>>> GetUsers(string? username, string? email, string? roleId, UsersOrderBy order = UsersOrderBy.Id, int? page = null, int? size = null)
         {
-            var query = _userManager.Users.Include(x => x.Roles).AsQueryable();
+            var query = _userManager.Users.AsQueryable(); // Remove .Include(x => x.Roles)
             _logger.LogInformation("Getting users");
-            int total = await query.CountAsync();
+            int total = await query.CountAsync(); // Use CountAsync()
+
             if (!string.IsNullOrWhiteSpace(username))
             {
                 query = query.Where(u => u.UserName!.Contains(username));
@@ -36,8 +41,19 @@ namespace Gamebook.Server.Controllers
             }
             if (!string.IsNullOrWhiteSpace(roleId))
             {
-                query = query.Where(u => u.Roles!.Any(r => r.Id == roleId));
+                // Validace, zda roleId je validní GUID
+                if (!Guid.TryParse(roleId, out Guid parsedRoleId))
+                {
+                    _logger.LogWarning($"Invalid roleId format: {roleId}");
+                    return BadRequest("Invalid roleId format");
+                }
+
+                // Get users in the specified role
+                var usersInRole = await _userManager.GetUsersInRoleAsync(roleId);
+                var userIdsInRole = usersInRole.Select(u => u.Id);
+                query = query.Where(u => userIdsInRole.Contains(u.Id));
             }
+
             query = order switch
             {
                 UsersOrderBy.Id => query.OrderBy(u => u.Id),
@@ -48,13 +64,21 @@ namespace Gamebook.Server.Controllers
                 UsersOrderBy.EmailDesc => query.OrderByDescending(u => u.Email),
                 _ => query.OrderBy(u => u.Id)
             };
+
             var users = await query.Select(u => new UserListVM
             {
                 Id = u.Id,
                 UserName = u.UserName!,
                 Email = u.Email!,
-                Roles = u.Roles
+                Roles = null // Remove Roles from here
             }).Skip((page ?? 0) * (size ?? 10)).Take(size ?? 10).ToListAsync();
+
+            // Populate Roles for each user
+            foreach (var user in users)
+            {
+                user.Roles = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(user.Id));
+            }
+
             _logger.LogInformation($"Found {users.Count} users");
             return Ok(new ListResult<UserListVM>
             {
@@ -83,17 +107,34 @@ namespace Gamebook.Server.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Policy = Policy.Admin)]
-        public async Task<IActionResult> GetUserById(Guid id)
+        public async Task<IActionResult> GetUserById(string id)
         {
             _logger.LogInformation($"Getting user {id}");
-            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            // Validate id format
+            if (!Guid.TryParse(id, out _))
+            {
+                _logger.LogWarning($"Invalid id format: {id}");
+                return BadRequest("Invalid id format");
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 _logger.LogWarning($"User {id} not found");
                 return NotFound();
             }
             _logger.LogInformation($"User {id} found");
-            return Ok(user);
+
+            // Return DTO instead of the whole User object
+            var userDTO = new UserDTO
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email
+            };
+
+            return Ok(userDTO);
         }
 
         [HttpPut("{id}")]
@@ -101,7 +142,7 @@ namespace Gamebook.Server.Controllers
         public async Task<IActionResult> UpdateUser(string id, [FromBody] User user)
         {
             _logger.LogInformation($"Updating user {id}");
-            if (id != user.Id)
+            if (id != user.Id.ToString())
             {
                 _logger.LogWarning($"User {id} request is not valid");
                 return BadRequest();
@@ -118,10 +159,18 @@ namespace Gamebook.Server.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = Policy.Admin)]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
             _logger.LogInformation($"Deleting user {id}");
-            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            // Validate id format
+            if (!Guid.TryParse(id, out _))
+            {
+                _logger.LogWarning($"Invalid id format: {id}");
+                return BadRequest("Invalid id format");
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 _logger.LogWarning($"User {id} not found");
@@ -131,7 +180,7 @@ namespace Gamebook.Server.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation($"User {id} deleted");
-                return Ok();
+                return NoContent();
             }
             _logger.LogWarning($"Failed to delete user {id}");
             return BadRequest(result.Errors);
@@ -139,59 +188,102 @@ namespace Gamebook.Server.Controllers
 
         [HttpGet("{id}/role")]
         [Authorize(Policy = Policy.Admin)]
-        public async Task<IActionResult> GetUserRoles(Guid id)
+        public async Task<IActionResult> GetUserRoles(string id)
         {
             _logger.LogInformation($"Getting roles for user {id}");
-            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            // Validate id format
+            if (!Guid.TryParse(id, out _))
+            {
+                _logger.LogWarning($"Invalid id format: {id}");
+                return BadRequest("Invalid id format");
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 _logger.LogWarning($"User {id} not found");
                 return NotFound();
             }
+
+            // Use UserManager.GetRolesAsync() to get the roles
             var roles = await _userManager.GetRolesAsync(user);
+
             _logger.LogInformation($"Found {roles.Count} roles for user {id}");
             return Ok(roles);
         }
 
         [HttpPost("{id}/role")]
         [Authorize(Policy = Policy.Admin)]
-        public async Task<IActionResult> AddUserRole(Guid id, [FromBody] string role)
+        public async Task<IActionResult> AddUserRole(string id, [FromBody] string roleName)
         {
-            _logger.LogInformation($"Adding role {role} to user {id}");
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            _logger.LogInformation($"Adding role {roleName} to user {id}");
+
+            // Validate id format
+            if (!Guid.TryParse(id, out _))
+            {
+                _logger.LogWarning($"Invalid id format: {id}");
+                return BadRequest("Invalid id format");
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 _logger.LogWarning($"User {id} not found");
                 return NotFound();
             }
-            var result = await _userManager.AddToRoleAsync(user, role);
+
+            // Check if role exists
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                _logger.LogWarning($"Role {roleName} does not exist");
+                return BadRequest($"Role {roleName} does not exist");
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, roleName);
             if (result.Succeeded)
             {
-                _logger.LogInformation($"Role {role} added to user {id}");
+                _logger.LogInformation($"Role {roleName} added to user {id}");
                 return Ok();
             }
-            _logger.LogWarning($"Failed to add role {role} to user {id}");
+            _logger.LogWarning($"Failed to add role {roleName} to user {id}");
             return BadRequest(result.Errors);
         }
 
         [HttpDelete("{id}/role")]
         [Authorize(Policy = Policy.Admin)]
-        public async Task<IActionResult> RemoveUserRole(Guid id, [FromBody] string role)
+        public async Task<IActionResult> RemoveUserRole(string id, [FromBody] string roleName)
         {
-            _logger.LogInformation($"Removing role {role} from user {id}");
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            _logger.LogInformation($"Removing role {roleName} from user {id}");
+
+            // Validate id format
+            if (!Guid.TryParse(id, out _))
+            {
+                _logger.LogWarning($"Invalid id format: {id}");
+                return BadRequest("Invalid id format");
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 _logger.LogWarning($"User {id} not found");
                 return NotFound();
             }
-            var result = await _userManager.RemoveFromRoleAsync(user, role);
+
+            // Check if role exists
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                _logger.LogWarning($"Role {roleName} does not exist");
+                return BadRequest($"Role {roleName} does not exist");
+            }
+
+            var result = await _userManager.RemoveFromRoleAsync(user, roleName);
             if (result.Succeeded)
             {
-                _logger.LogInformation($"Role {role} removed from user {id}");
-                return Ok();
+                _logger.LogInformation($"Role {roleName} removed from user {id}");
+                return NoContent();
             }
-            _logger.LogWarning($"Failed to remove role {role} from user {id}");
+            _logger.LogWarning($"Failed to remove role {roleName} from user {id}");
             return BadRequest(result.Errors);
         }
     }
@@ -204,5 +296,13 @@ namespace Gamebook.Server.Controllers
         UsernameDesc,
         Email,
         EmailDesc
+    }
+
+    // DTO for returning user data without sensitive information
+    public class UserDTO
+    {
+        public required string Id { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
     }
 }

@@ -1,12 +1,10 @@
-﻿using Gamebook.Server.Models;
-
-namespace Gamebook.Server.ViewModels
+﻿namespace Gamebook.Server.ViewModels
 {
     public class UserListVM
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        public required string UserName { get; set; }
-        public required string Email { get; set; }
-        public ICollection<Role>? Roles { get; set; }
+        public required string Id { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
+        public IList<string> Roles { get; set; } // Change the type to IList<string>
     }
 }

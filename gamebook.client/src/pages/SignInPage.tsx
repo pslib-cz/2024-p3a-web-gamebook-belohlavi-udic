@@ -11,7 +11,6 @@ const SignInPage = () => {
     const { dispatch } = useAuth();
     const navigate = useNavigate();
 
-    // Check localStorage if a token is already there
     useEffect(() => {
         const token = localStorage.getItem('access_token');
         if (token) {
@@ -36,6 +35,8 @@ const SignInPage = () => {
             }
 
             const data = await response.json();
+            // Uložení tokenu do localStorage
+            localStorage.setItem('access_token', data.accessToken);
             dispatch({ type: SET_TOKEN, token: data.accessToken });
             navigate("/game");
         } catch (error) {

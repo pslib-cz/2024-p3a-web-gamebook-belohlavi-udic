@@ -8,7 +8,7 @@ import { GameService } from '../service/gameService';
 export default function RoomPage() {
     const { roomId } = useParams();
     const navigate = useNavigate();
-    const { state, loadRoom } = useGame();
+    const { state, loadRoom, updateHP } = useGame();
     const { state: authState } = useAuth();
 
     useEffect(() => {
@@ -16,32 +16,35 @@ export default function RoomPage() {
             const roomIdNumber = parseInt(roomId, 10);
             if (!isNaN(roomIdNumber)) {
                 loadRoom(roomIdNumber);
-            }
-            else {
+            } else {
                 console.error(`Invalid roomId ${roomId}`);
-                navigate('/not-found'); // Handle invalid routes
+                navigate('/not-found', { state: { message: 'Neplatné ID místnosti' } });
             }
-
         }
     }, [roomId, loadRoom, navigate]);
 
     const handleAction = async (connectionId: number) => {
         if (!authState.token) {
             console.error("No token found!");
+            navigate('/sign-in');
             return;
         }
         try {
-            await GameService.movePlayer(connectionId, authState.token);
-            if (state.roomData?.id)
-                await loadRoom(state.roomData.id);
-            else
-                console.log("cannot move - the room was not loaded yet.")
-
-
-        }
-        catch (error) {
+            const result = await GameService.movePlayer(connectionId, authState.token);
+            if (state.roomData?.id) {
+                await loadRoom(result.newRoomId);
+                updateHP(result.playerHp);
+            } else {
+                console.error("Cannot move - the room was not loaded yet.");
+            }
+        } catch (error) {
             if (error instanceof Error) {
-                console.log(error.message);
+                console.error(error.message);
+                if (error.message.includes('Unauthorized')) {
+                    navigate('/sign-in');
+                } else {
+                    navigate('/not-found', { state: { message: 'Chyba pøi provádìní akce' } });
+                }
             }
         }
     };
@@ -73,7 +76,6 @@ export default function RoomPage() {
                 </div>
             </div>
 
-
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                 <h1 className="text-3xl font-bold text-green-400 mb-6">
                     {state.roomData.name}
@@ -84,7 +86,6 @@ export default function RoomPage() {
                         {state.roomData.description}
                     </p>
                 </div>
-
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl">
                     {state.connections.map((connection) => (
@@ -106,18 +107,17 @@ export default function RoomPage() {
                     ))}
                 </div>
 
-
                 {state.status === 'dead' && (
                     <div className="mt-8">
                         <Alert
                             type="error"
-                            message="Zem?el jsi! Hra skon?ila."
+                            message="Zemøel jsi! Hra skonèila."
                         />
                         <button
                             onClick={() => navigate('/start')}
                             className="mt-4 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
                         >
-                            Za?ít znovu
+                            Zaèít znovu
                         </button>
                     </div>
                 )}

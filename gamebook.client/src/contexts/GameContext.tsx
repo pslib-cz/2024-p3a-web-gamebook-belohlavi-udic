@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { GameService } from '../service/gameService';
+import useAuth from '../hooks/useAuth';
 
 interface Room {
     id: number;
@@ -66,71 +68,86 @@ interface GameContextType {
     dispatch: React.Dispatch<GameAction>;
     loadRoom: (roomId: number) => Promise<void>;
     makeMove: (connectionId: number) => Promise<void>;
+    updateHP: (newHp: number) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(gameReducer, initialState);
+    const { state: authState } = useAuth();
 
-    const handleApiError = (error: unknown): string => {
-        if (error instanceof Error) return error.message;
-        if (typeof error === 'string') return error;
-        return 'An unknown error occurred';
-    };
+    const handleApiError = useCallback((error: unknown, navigate: (path: string) => void): string => {
+        let errorMessage = 'An unknown error occurred';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+            if (errorMessage.includes('Unauthorized')) {
+                navigate('/sign-in');
+                return 'Session expired. Please log in again.';
+            }
+        } else if (typeof error === 'string') {
+            errorMessage = error;
+        }
+        return errorMessage;
+    }, []);
 
     const loadRoom = useCallback(async (roomId: number) => {
+        if (!authState.token) {
+            console.warn("Authentication token is missing.");
+            return;
+        }
+
         dispatch({ type: 'SET_LOADING', loading: true });
         try {
-            const response = await fetch(`/api/rooms/${roomId}`);
-            if (!response.ok) throw new Error('Failed to load room');
-            const roomData = await response.json();
+            const roomData = await GameService.getRoomById(roomId, authState.token);
             dispatch({ type: 'SET_ROOM', room: roomData });
 
-            const connectionsResponse = await fetch(`/api/connections?roomId=${roomId}`);
-            if (!connectionsResponse.ok) throw new Error('Failed to load connections');
-            const connectionsData = await connectionsResponse.json();
+            const connectionsData = await GameService.getConnections(roomId, authState.token);
             dispatch({ type: 'SET_CONNECTIONS', connections: connectionsData });
 
             dispatch({ type: 'SET_ERROR', error: null });
         } catch (error) {
-            dispatch({ type: 'SET_ERROR', error: handleApiError(error) });
+            const errorMessage = handleApiError(error, (path) => {
+                // Pøesmìrování na /sign-in v pøípadì chyby autentizace
+                window.location.href = path;
+            });
+            dispatch({ type: 'SET_ERROR', error: errorMessage });
         } finally {
             dispatch({ type: 'SET_LOADING', loading: false });
         }
-    }, []);
+    }, [authState.token, handleApiError]);
 
     const makeMove = useCallback(async (connectionId: number) => {
+        if (!authState.token) {
+            console.warn("Authentication token is missing.");
+            return;
+        }
+
         dispatch({ type: 'SET_LOADING', loading: true });
         try {
-            const response = await fetch('/api/players/current/move', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ connectionId }),
-            });
+            const moveResult = await GameService.movePlayer(connectionId, authState.token);
+            dispatch({ type: 'UPDATE_HP', hp: moveResult.playerHp });
+            dispatch({ type: 'SET_STATUS', status: moveResult.playerStatus });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to make move');
-            }
-
-            const data = await response.json();
-            dispatch({ type: 'UPDATE_HP', hp: data.currentHP });
-            dispatch({ type: 'SET_STATUS', status: data.status });
-
-            await loadRoom(data.newRoomId);
+            await loadRoom(moveResult.newRoomId);
             dispatch({ type: 'SET_ERROR', error: null });
         } catch (error) {
-            dispatch({ type: 'SET_ERROR', error: handleApiError(error) });
+            const errorMessage = handleApiError(error, (path) => {
+                // Pøesmìrování na /sign-in v pøípadì chyby autentizace
+                window.location.href = path;
+            });
+            dispatch({ type: 'SET_ERROR', error: errorMessage });
         } finally {
             dispatch({ type: 'SET_LOADING', loading: false });
         }
-    }, [loadRoom]);
+    }, [authState.token, loadRoom, handleApiError]);
+
+    const updateHP = useCallback((newHp: number) => {
+        dispatch({ type: 'UPDATE_HP', hp: newHp });
+    }, []);
 
     return (
-        <GameContext.Provider value={{ state, dispatch, loadRoom, makeMove }}>
+        <GameContext.Provider value={{ state, dispatch, loadRoom, makeMove, updateHP }}>
             {children}
         </GameContext.Provider>
     );

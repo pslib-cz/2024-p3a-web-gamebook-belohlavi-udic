@@ -8,7 +8,6 @@ namespace Gamebook.Server.Models
     public class User : IdentityUser<string>
     {
         public override string Id { get; set; } = Guid.NewGuid().ToString();
-        [JsonIgnore]
-        public ICollection<Role>? Roles { get; set; }
+        // ICollection<Role>? Roles { get; set; } - Odstraněno
     }
 }

@@ -7,7 +7,9 @@ import SignInPage from './pages/SignInPage';
 import GamePage from './pages/GamePage';
 import StartPage from './pages/StartPage';
 import NotFoundPage from './pages/NotFound';
-import { GameProvider } from './contexts/GameContext'; 
+import RoomPage from './pages/RoomPage';
+import { GameProvider } from './contexts/GameContext';
+import { ChallengeProvider } from './contexts/ChallengeContext';
 
 import './App.css';
 
@@ -22,7 +24,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "start",
-                element: <GameProvider><StartPage /></GameProvider> 
+                element: <GameProvider><StartPage /></GameProvider>
             },
             {
                 path: "sign-up",
@@ -34,7 +36,17 @@ const router = createBrowserRouter([
             },
             {
                 path: "game",
-                element: <GamePage />
+                element: <GameProvider><GamePage /></GameProvider>
+            },
+            {
+                path: "room/:roomId",
+                element: (
+                    <GameProvider>
+                        <ChallengeProvider>
+                            <RoomPage />
+                        </ChallengeProvider>
+                    </GameProvider>
+                )
             },
             {
                 path: "*",

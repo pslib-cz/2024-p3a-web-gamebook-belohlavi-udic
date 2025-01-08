@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { createContext, useContext, useReducer, useCallback } from 'react';
+import { GameService } from '../service/gameService';
+import useAuth from '../hooks/useAuth';
+import { useGame } from './GameContext';
 
 interface Challenge {
     id: number;
@@ -61,6 +64,8 @@ const ChallengeContext = createContext<ChallengeContextType | undefined>(undefin
 
 export function ChallengeProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(challengeReducer, initialState);
+    const { state: authState } = useAuth();
+    const { updateHP } = useGame();
 
     const startChallenge = useCallback(async (challengeId: number) => {
         dispatch({ type: 'SET_LOADING', loading: true });
@@ -80,23 +85,22 @@ export function ChallengeProvider({ children }: { children: React.ReactNode }) {
 
     const attemptChallenge = useCallback(async () => {
         if (!state.currentChallenge) return;
+        if (!authState.token) {
+            console.warn("Authentication token is missing.");
+            return;
+        }
 
         dispatch({ type: 'SET_LOADING', loading: true });
         try {
-            const response = await fetch(`/api/challenges/${state.currentChallenge.id}/attempt`, {
-                method: 'POST'
-            });
-
-            if (!response.ok) throw new Error('Failed to process challenge attempt');
-
-            const result = await response.json();
+            const result = await GameService.attemptChallenge(state.currentChallenge.id, authState.token);
             dispatch({ type: 'END_CHALLENGE', outcome: result.success ? 'success' : 'failure' });
+            updateHP(result.playerHp);
         } catch (error) {
             dispatch({ type: 'SET_ERROR', error: error instanceof Error ? error.message : 'Unknown error' });
         } finally {
             dispatch({ type: 'SET_LOADING', loading: false });
         }
-    }, [state.currentChallenge]);
+    }, [state.currentChallenge, authState.token, updateHP]);
 
     return (
         <ChallengeContext.Provider value={{ state, startChallenge, attemptChallenge }}>

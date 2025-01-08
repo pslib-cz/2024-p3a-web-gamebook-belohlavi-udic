@@ -2,7 +2,7 @@
 {
     public class File
     {
-        public Guid FileId { get; set; }  
+        public Guid Id { get; set; } // Změna na Id
         public required string Name { get; set; }
         public required long Size { get; set; }
         public required string ContentType { get; set; }

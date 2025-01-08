@@ -43,7 +43,7 @@ export class GameService {
 
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${token}`, // Pøidání Bearer tokenu do hlavièky
             ...options.headers
         };
 
@@ -51,6 +51,13 @@ export class GameService {
             ...options,
             headers
         });
+
+        if (response.status === 401) {
+            // Kontrola 401 Unauthorized
+            localStorage.removeItem('access_token');
+            window.location.href = '/sign-in'; // Pøesmìrování na pøihlašovací stránku
+            throw new Error('Unauthorized');
+        }
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -143,6 +150,7 @@ export class GameService {
         }, token);
     }
 
+    // Kontrola expirace tokenu
     static isTokenExpired(token: string): boolean {
         if (!token) return true;
         try {

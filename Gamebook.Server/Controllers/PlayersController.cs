@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Gamebook.Server.Services;
 using System.Text.Json;
+using Gamebook.Server.Constants;
 
 namespace Gamebook.Server.Controllers
 {
@@ -30,7 +31,7 @@ namespace Gamebook.Server.Controllers
 
         // GET: api/players
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = Policy.Admin)] // Přidána autorizace pro admina
         public async Task<ActionResult<IEnumerable<Player>>> GetPlayers()
         {
             _logger.LogInformation("Getting all players");
@@ -101,7 +102,8 @@ namespace Gamebook.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting or creating current user");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "An error occurred while getting the current player" });
+                // Změna chybové zprávy, aby obsahovala detail chyby
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occurred while getting the current player: {ex.Message}" });
             }
         }
 
@@ -110,29 +112,34 @@ namespace Gamebook.Server.Controllers
         [Authorize]
         public async Task<ActionResult<Player>> ResetPlayer()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.Name); // Změna na ClaimTypes.Name
             if (string.IsNullOrEmpty(userId))
             {
+                _logger.LogWarning("User ID not found in claims");
                 return Unauthorized();
             }
-
 
             try
             {
                 var player = await _context.Players
                      .FirstOrDefaultAsync(p => p.UserId == userId);
 
-
                 if (player == null)
                 {
+                    _logger.LogWarning($"Player for user {userId} not found");
                     return NotFound();
                 }
 
+                // Ověření, zda userId v requestu odpovídá userId přihlášeného uživatele
+                if (player.UserId != userId)
+                {
+                    _logger.LogWarning($"User {userId} is not authorized to reset this player");
+                    return Forbid();
+                }
 
                 player.HP = 100;
                 player.CurrentRoomID = 1;
                 player.Status = "Active";
-
 
                 var gameState = new GameState
                 {
@@ -146,7 +153,6 @@ namespace Gamebook.Server.Controllers
                     })
                 };
 
-
                 _context.GameStates.Add(gameState);
                 await _context.SaveChangesAsync();
 
@@ -156,7 +162,7 @@ namespace Gamebook.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while resetting player");
-                return StatusCode(500, new { message = "Error while resetting player" });
+                return StatusCode(500, new { message = $"Error while resetting player: {ex.Message}" });
             }
         }
 
@@ -165,22 +171,19 @@ namespace Gamebook.Server.Controllers
             public required int ConnectionId { get; set; }
         }
 
-
         // PUT: api/players/current/move
         [HttpPut("current/move")]
         [Authorize]
         public async Task<IActionResult> MovePlayer([FromBody] PlayerMoveRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("User ID not found in claims");
                 return Unauthorized();
             }
 
-
-            var player = await _context.Players
-               .FirstOrDefaultAsync(p => p.UserId == userId);
+            var player = await _context.Players.FirstOrDefaultAsync(p => p.UserId == userId);
             if (player == null)
             {
                 _logger.LogWarning($"Player for current user {userId} not found during move");
@@ -201,30 +204,11 @@ namespace Gamebook.Server.Controllers
                     return BadRequest(new { message = "Invalid movement" });
                 }
 
+                // Call the MovePlayer method from GameService
+                var (newRoomId, playerHp, playerStatus) = await _gameService.MovePlayer(player, connection);
 
-                // Move player to new room
-                player.CurrentRoomID = connection.RoomID2;
-
-                // Record the move in game state
-                var gameState = new GameState
-                {
-                    PlayerID = player.ID,
-                    Timestamp = DateTime.UtcNow,
-                    Data = JsonSerializer.Serialize(new
-                    {
-                        Action = "move",
-                        FromRoom = connection.RoomID1,
-                        ToRoom = connection.RoomID2
-                    })
-                };
-
-
-                _context.GameStates.Add(gameState);
-
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"Player {player.ID} moved to room {connection.RoomID2}");
-                return Ok(new { currentHP = player.HP, status = player.Status, newRoomId = player.CurrentRoomID });
+                // Return NoContent to indicate success without specific content
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -244,7 +228,7 @@ namespace Gamebook.Server.Controllers
         [Authorize]
         public async Task<IActionResult> UpdatePlayerStatus([FromBody] UpdatePlayerStatusRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("User ID not found in claims");
@@ -260,7 +244,6 @@ namespace Gamebook.Server.Controllers
             }
             _logger.LogInformation($"Updating status for player {player.ID}");
 
-
             try
             {
                 player.Status = request.Status;
@@ -271,7 +254,8 @@ namespace Gamebook.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while updating player status");
-                return StatusCode(500, new { message = "Error while updating player status" });
+                // Detailnější chybová zpráva
+                return StatusCode(500, new { message = $"Error while updating player status: {ex.Message}" });
             }
         }
 
@@ -280,13 +264,12 @@ namespace Gamebook.Server.Controllers
             public required int HP { get; set; }
         }
 
-
         // PUT: api/players/current/hp
         [HttpPut("current/hp")]
         [Authorize]
         public async Task<IActionResult> UpdatePlayerHP([FromBody] UpdatePlayerHPRequest request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.Name);
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("User ID not found in claims");
@@ -326,7 +309,6 @@ namespace Gamebook.Server.Controllers
                     })
                 };
 
-
                 _context.GameStates.Add(gameState);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"HP updated for player {player.ID}: {player.HP}");
@@ -335,10 +317,10 @@ namespace Gamebook.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while updating player HP");
-                return StatusCode(500, new { message = "Error while updating player HP" });
+                // Detailnější chybová zpráva
+                return StatusCode(500, new { message = $"Error while updating player HP: {ex.Message}" });
             }
         }
-
 
         // DELETE: api/players/5
         [HttpDelete("{id}")]
@@ -351,18 +333,23 @@ namespace Gamebook.Server.Controllers
                 return NotFound();
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.Name); // Změna na ClaimTypes.Name
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            // Admin může smazat jakéhokoli hráče, ostatní uživatelé jen sami sebe
+            if (User.IsInRole(Gamebook.Server.Constants.Role.Admin) || player.UserId == userId)
+            {
+                _context.Players.Remove(player);
+                await _context.SaveChangesAsync();
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (player.UserId != userId)
+                return NoContent();
+            }
+            else
             {
                 return Forbid();
             }
-
-
-            _context.Players.Remove(player);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
         }
     }
 }

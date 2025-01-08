@@ -20,13 +20,12 @@ namespace Gamebook.Server.Controllers
             _logger = logger;
         }
 
-  
         [HttpGet]
         public async Task<ActionResult<ListResult<FileListVM>>> GetFiles(string? name, string? ownerId, string? type, string? ownerName, FilesOrderBy? order = FilesOrderBy.Id, int? page = null, int? size = null)
         {
-            var query = _context.Files.Select(f => new FileListVM 
+            var query = _context.Files.Select(f => new FileListVM
             {
-                FileId = f.FileId,
+                FileId = f.Id,
                 Name = f.Name,
                 Size = f.Size,
                 ContentType = f.ContentType,
@@ -40,8 +39,14 @@ namespace Gamebook.Server.Controllers
             {
                 query = query.Where(f => f.Name.Contains(name));
             }
-            if (ownerId != String.Empty)
+            if (!string.IsNullOrWhiteSpace(ownerId))
             {
+                // Validace, zda ownerId je validní GUID
+                if (!Guid.TryParse(ownerId, out _))
+                {
+                    _logger.LogWarning($"Invalid ownerId format: {ownerId}");
+                    return BadRequest("Invalid ownerId format");
+                }
                 query = query.Where(f => f.CreatedById == ownerId);
             }
             if (!string.IsNullOrWhiteSpace(ownerName))
@@ -77,7 +82,6 @@ namespace Gamebook.Server.Controllers
             });
         }
 
-      
         [HttpGet("{id}")]
         public async Task<ActionResult<Models.File>> GetFile(Guid id)
         {
@@ -91,7 +95,6 @@ namespace Gamebook.Server.Controllers
             return file;
         }
 
-      
         [HttpGet("{id}/download")]
         public async Task<ActionResult> DownloadFile(Guid id)
         {
@@ -104,8 +107,7 @@ namespace Gamebook.Server.Controllers
             }
             return File(file.Content, file.ContentType, file.Name);
         }
-        
-  
+
         [HttpPost]
         [Authorize(Policy = Policy.Author)]
         [Consumes("multipart/form-data")]
@@ -136,10 +138,10 @@ namespace Gamebook.Server.Controllers
             };
             _context.Files.Add(newFile);
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"Uploaded file {newFile.FileId}");
-            return CreatedAtAction("GetFile", new { id = newFile.FileId }, newFile);
+            _logger.LogInformation($"Uploaded file {newFile.Id}");
+            return CreatedAtAction("GetFile", new { id = newFile.Id }, newFile);
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize(Policy = Policy.Author)]
         public async Task<ActionResult> DeleteFile(Guid id)
@@ -151,10 +153,19 @@ namespace Gamebook.Server.Controllers
                 _logger.LogWarning($"File {id} not found");
                 return NotFound();
             }
+
+            // Kontrola, zda uživatel, který soubor maže, je jeho tvůrcem
+            string? userId = User.FindFirstValue(ClaimTypes.Name);
+            if (userId != file.CreatedById)
+            {
+                _logger.LogWarning($"User {userId} is not authorized to delete file {id}");
+                return Forbid();
+            }
+
             _context.Files.Remove(file);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Deleted file {id}");
-            return Ok(new { id = file.FileId});
+            return Ok(new { id = file.Id });
         }
 
         [HttpPut("{id}")]
@@ -174,12 +185,15 @@ namespace Gamebook.Server.Controllers
                 _logger.LogWarning("No file uploaded");
                 return BadRequest();
             }
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+
+            // Kontrola, zda uživatel, který soubor upravuje, je jeho tvůrcem
+            string? userId = User.FindFirstValue(ClaimTypes.Name);
+            if (userId != existingFile.CreatedById)
             {
-                _logger.LogWarning("No user found");
-                return Unauthorized();
+                _logger.LogWarning($"User {userId} is not authorized to update file {id}");
+                return Forbid();
             }
+
             var memoryStream = new MemoryStream();
             await file.CopyToAsync(memoryStream);
             existingFile.Name = file.FileName;

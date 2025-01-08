@@ -1,40 +1,28 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth";
+import { GameService } from "../service/gameService";
 
 function GamePage() {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { state: authState } = useAuth();
+    const navigate = useNavigate();
     const [gameStarted, setGameStarted] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch("/current"); 
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const result = await response.json();
-                setData(result);
-            } catch (err: any) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    const handleStartGame = () => {
-        if (data) {
+    const handleStartGame = async () => {
+        if (authState.token) {
             setGameStarted(true);
-            console.log("Game started!", data); 
+            try {
+                const newGame = await GameService.startNewGame(authState.token);
+                const initialRoomId = newGame.initialRoomId;
+
+                navigate(`/room/${initialRoomId}`);
+            } catch (error) {
+                console.error("Error starting the game:", error);
+            }
+        } else {
+            console.error('Not logged in, cannot start a new game');
         }
     };
-
-    if (loading) return <div>Loading...</div>;
-
-    if (error) return <div>Error: {error}</div>;
 
     return (
         <div style={{ textAlign: "center", marginTop: "50px" }}>
@@ -47,8 +35,6 @@ function GamePage() {
             ) : (
                 <div>
                     <h2>Game Running...</h2>
-                    {}
-                    <pre>{JSON.stringify(data, null, 2)}</pre>
                 </div>
             )}
         </div>

@@ -55,6 +55,13 @@ namespace Gamebook.Server.Controllers
                 return NotFound();
             }
 
+            // Kontrola, zda Room1 a Room2 nejsou null
+            if (connection.Room1 == null || connection.Room2 == null)
+            {
+                _logger.LogError($"Room1 or Room2 is null for connection {id}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Room1 or Room2 is null");
+            }
+
             return connection;
         }
 
@@ -77,8 +84,37 @@ namespace Gamebook.Server.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Kontrola, zda RoomID1 a RoomID2 nejsou stejné
+            if (connection.RoomID1 == connection.RoomID2)
+            {
+                _logger.LogWarning($"RoomID1 and RoomID2 cannot be the same when creating a connection");
+                return BadRequest("RoomID1 and RoomID2 cannot be the same.");
+            }
+
+            // Kontrola, zda RoomID1 a RoomID2 existují
+            if (!await _context.Rooms.AnyAsync(r => r.ID == connection.RoomID1))
+            {
+                _logger.LogWarning($"Room {connection.RoomID1} not found");
+                return BadRequest($"Room {connection.RoomID1} not found");
+            }
+
+            if (!await _context.Rooms.AnyAsync(r => r.ID == connection.RoomID2))
+            {
+                _logger.LogWarning($"Room {connection.RoomID2} not found");
+                return BadRequest($"Room {connection.RoomID2} not found");
+            }
+
             try
             {
+                // Kontrola, zda Room1 a Room2 jsou načteny
+                connection.Room1 = await _context.Rooms.FindAsync(connection.RoomID1);
+                connection.Room2 = await _context.Rooms.FindAsync(connection.RoomID2);
+                if (connection.Room1 == null || connection.Room2 == null)
+                {
+                    _logger.LogError($"Room1 or Room2 is null for new connection");
+                    return StatusCode(StatusCodes.Status500InternalServerError, "Room1 or Room2 is null");
+                }
+
                 _context.Connections.Add(connection);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation($"Connection {connection.ID} created successfully");

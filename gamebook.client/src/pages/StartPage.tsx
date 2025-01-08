@@ -5,14 +5,12 @@ import { Alert } from '../components/common';
 import useAuth from "../hooks/useAuth";
 import { GameService } from '../service/gameService';
 
-
 export default function StartPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
     const { loadRoom } = useGame();
     const { state: authState } = useAuth();
-
 
     const startNewGame = async () => {
         setLoading(true);
@@ -45,8 +43,8 @@ export default function StartPage() {
 
                 <div className="bg-gray-800 p-8 rounded-lg shadow-xl mb-8">
                     <p className="text-gray-300 text-lg mb-6">
-                        Vydej se na nebezpe?nou cestu plnou výzev, souboj? a tajemství.
-                        Tvá rozhodnutí urcí tvuj osud.
+                        Vydej se na nebezpeènou cestu plnou výzev, soubojù a tajemství.
+                        Tvá rozhodnutí urèí tvùj osud.
                     </p>
 
                     {error && (
@@ -86,15 +84,15 @@ export default function StartPage() {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         />
                                     </svg>
-                                    Na?ítání...
+                                    Naèítání...
                                 </span>
                             ) : (
-                                'Za?ít nové dobrodružství'
+                                'Zaèít nové dobrodružství'
                             )}
                         </button>
 
                         <p className="text-gray-500 text-sm">
-                            Pozor: Za?átek nové hry resetuje tv?j p?edchozí postup.
+                            Pozor: Zaèátek nové hry resetuje tvùj pøedchozí postup.
                         </p>
                     </div>
                 </div>

@@ -6,13 +6,6 @@ using System.Text.Json;
 
 namespace Gamebook.Server.Services
 {
-    public interface IGameService
-    {
-        Task<Player> CreateNewGame(string userId);
-        Task<GameState> ProcessAction(int playerId, string actionType, object data);
-        Task<bool> ValidateMove(int playerId, int connectionId);
-    }
-
     public class GameService : IGameService
     {
         private readonly GamebookDbContext _dbContext;
@@ -61,14 +54,12 @@ namespace Gamebook.Server.Services
                 {
                     _gameLogger.LogInformation($"Creating new player for user {userId}");
 
-
                     var startingRoom = await _dbContext.Rooms.FindAsync(1);
                     if (startingRoom == null)
                     {
                         _gameLogger.LogError($"Starting room with id 1 not found");
                         throw new InvalidOperationException("Starting room not found");
                     }
-
 
                     var newPlayer = new Player
                     {
@@ -79,7 +70,6 @@ namespace Gamebook.Server.Services
                     };
                     _dbContext.Players.Add(newPlayer);
                     await _dbContext.SaveChangesAsync(); // Save to generate player ID
-
 
                     var gameState = new GameState
                     {
@@ -106,7 +96,6 @@ namespace Gamebook.Server.Services
             }
         }
 
-
         public async Task<GameState> ProcessAction(int playerId, string actionType, object data)
         {
             var player = await _dbContext.Players
@@ -119,12 +108,10 @@ namespace Gamebook.Server.Services
                 throw new InvalidOperationException("Player not found");
             }
 
-
             GameState gameState;
 
             try
             {
-
                 switch (actionType)
                 {
                     case "challenge":
@@ -161,7 +148,6 @@ namespace Gamebook.Server.Services
                 return false;
             }
 
-
             var connection = await _dbContext.Connections
                 .FirstOrDefaultAsync(c =>
                     c.ID == connectionId &&
@@ -173,14 +159,13 @@ namespace Gamebook.Server.Services
                 return false;
             }
 
-
             if (player.HP <= 0)
             {
                 _gameLogger.LogInformation($"Player {playerId} cannot move - HP is 0");
                 return false;
             }
-            return true;
 
+            return true;
         }
 
         private async Task<GameState> ProcessChallenge(Player player, int challengeId)
@@ -235,7 +220,7 @@ namespace Gamebook.Server.Services
                 _gameLogger.LogWarning($"Invalid movement: connection {connectionId} for player {player.ID}");
                 throw new InvalidOperationException("Invalid movement");
             }
-            _gameLogger.LogInformation($"Moving player {player.ID} from room {player.CurrentRoomID} to {connection.RoomID2}");
+
             player.CurrentRoomID = connection.RoomID2;
 
             var gameState = new GameState
@@ -253,6 +238,33 @@ namespace Gamebook.Server.Services
 
             _dbContext.GameStates.Add(gameState);
             return gameState;
+        }
+
+        public async Task<(int newRoomId, int playerHp, string playerStatus)> MovePlayer(Player player, Connection connection)
+        {
+            _gameLogger.LogInformation($"Moving player {player.ID} from room {player.CurrentRoomID} to {connection.RoomID2}");
+
+            // Move player to new room
+            player.CurrentRoomID = connection.RoomID2;
+
+            // Record the move in game state
+            var gameState = new GameState
+            {
+                PlayerID = player.ID,
+                Timestamp = DateTime.UtcNow,
+                Data = JsonSerializer.Serialize(new
+                {
+                    Action = "move",
+                    FromRoom = connection.RoomID1,
+                    ToRoom = connection.RoomID2
+                })
+            };
+
+            _dbContext.GameStates.Add(gameState);
+            await _dbContext.SaveChangesAsync();
+
+            _gameLogger.LogInformation($"Player {player.ID} moved to room {connection.RoomID2}");
+            return (player.CurrentRoomID, player.HP, player.Status);
         }
     }
 }
