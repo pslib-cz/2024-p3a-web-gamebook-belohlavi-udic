@@ -1,4 +1,5 @@
-﻿using Gamebook.Server.Data;
+﻿using Gamebook.Server.Constants;
+using Gamebook.Server.Data;
 using Gamebook.Server.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Gamebook.Server.Services;
 using System.Text.Json;
-using Gamebook.Server.Constants;
 
 namespace Gamebook.Server.Controllers
 {
@@ -22,7 +22,7 @@ namespace Gamebook.Server.Controllers
             GamebookDbContext context,
             ILogger<PlayersController> logger,
             IGameService gameService
-            )
+        )
         {
             _context = context;
             _logger = logger;
@@ -60,7 +60,7 @@ namespace Gamebook.Server.Controllers
             {
                 var player = await _context.Players
                     .Include(p => p.CurrentRoom)
-                   .Include(p => p.GameStates)
+                    .Include(p => p.GameStates)
                     .FirstOrDefaultAsync(p => p.ID == id);
 
                 if (player == null)
@@ -75,7 +75,6 @@ namespace Gamebook.Server.Controllers
                 _logger.LogError(ex, $"Error while getting player {id}");
                 return StatusCode(500, new { message = $"Error while getting player {id}" });
             }
-
         }
 
         // GET: api/players/current
@@ -84,7 +83,7 @@ namespace Gamebook.Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Player>> GetCurrentPlayer()
+        public async Task<ActionResult<object>> GetCurrentPlayer()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -96,13 +95,38 @@ namespace Gamebook.Server.Controllers
             try
             {
                 var player = await _gameService.CreateNewGame(userId);
-                return Ok(player);
 
+                // Ensure CurrentRoom is included
+                var playerWithRoom = await _context.Players
+                    .Include(p => p.CurrentRoom)
+                    .FirstOrDefaultAsync(p => p.ID == player.ID);
+
+                if (playerWithRoom == null)
+                {
+                    _logger.LogError($"Player with ID {player.ID} not found after creation.");
+                    return NotFound(new { message = "Player not found." });
+                }
+
+                // Debugging: Log the player and room information
+                _logger.LogInformation($"GetCurrentPlayer: Player ID: {playerWithRoom.ID}, CurrentRoomID: {playerWithRoom.CurrentRoomID}");
+
+                var result = new
+                {
+                    playerId = playerWithRoom.ID,
+                    initialRoomId = playerWithRoom.CurrentRoomID,
+                    gameStateId = playerWithRoom.GameStates.OrderByDescending(gs => gs.Timestamp).FirstOrDefault()?.ID,
+                    playerHp = playerWithRoom.HP,
+                    playerStatus = playerWithRoom.Status
+                };
+
+                // Debugging: Log the response object
+                _logger.LogInformation($"GetCurrentPlayer: Response: {JsonSerializer.Serialize(result)}");
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while getting or creating current user");
-                // Změna chybové zprávy, aby obsahovala detail chyby
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = $"An error occurred while getting the current player: {ex.Message}" });
             }
         }
@@ -157,7 +181,6 @@ namespace Gamebook.Server.Controllers
                 await _context.SaveChangesAsync();
 
                 return player;
-
             }
             catch (Exception ex)
             {

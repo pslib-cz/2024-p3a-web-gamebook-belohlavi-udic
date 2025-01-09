@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
 import { GameService } from '../service/gameService';
 import useAuth from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
+// Interfaces for data structures
 interface Room {
     id: number;
     name: string;
@@ -26,6 +28,7 @@ interface GameState {
     error: string | null;
 }
 
+// Actions for the reducer
 type GameAction =
     | { type: 'SET_ROOM'; room: Room }
     | { type: 'SET_CONNECTIONS'; connections: Connection[] }
@@ -34,6 +37,7 @@ type GameAction =
     | { type: 'SET_LOADING'; loading: boolean }
     | { type: 'SET_ERROR'; error: string | null };
 
+// Initial state for the game
 const initialState: GameState = {
     currentRoom: null,
     hp: 100,
@@ -44,6 +48,7 @@ const initialState: GameState = {
     error: null
 };
 
+// Reducer function to handle state changes
 function gameReducer(state: GameState, action: GameAction): GameState {
     switch (action.type) {
         case 'SET_ROOM':
@@ -63,6 +68,7 @@ function gameReducer(state: GameState, action: GameAction): GameState {
     }
 }
 
+// Interface for the context
 interface GameContextType {
     state: GameState;
     dispatch: React.Dispatch<GameAction>;
@@ -71,29 +77,39 @@ interface GameContextType {
     updateHP: (newHp: number) => void;
 }
 
+// Creating the context
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
+// GameProvider component
 export function GameProvider({ children }: { children: React.ReactNode }) {
     const [state, dispatch] = useReducer(gameReducer, initialState);
     const { state: authState } = useAuth();
+    const navigate = useNavigate();
 
-    const handleApiError = useCallback((error: unknown, navigate: (path: string) => void): string => {
+    const handleApiError = useCallback((error: unknown): string => {
         let errorMessage = 'An unknown error occurred';
         if (error instanceof Error) {
             errorMessage = error.message;
             if (errorMessage.includes('Unauthorized')) {
+                // If unauthorized, remove the token and redirect to sign-in
+                localStorage.removeItem('access_token');
                 navigate('/sign-in');
                 return 'Session expired. Please log in again.';
             }
         } else if (typeof error === 'string') {
             errorMessage = error;
         }
+
+        console.error("GameContext: API Error Handled:", errorMessage);
+
         return errorMessage;
-    }, []);
+    }, [navigate]);
 
     const loadRoom = useCallback(async (roomId: number) => {
+        console.log("GameContext: loadRoom called with roomId:", roomId);
+
         if (!authState.token) {
-            console.warn("Authentication token is missing.");
+            console.warn("GameContext: Authentication token is missing.");
             return;
         }
 
@@ -103,14 +119,21 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             dispatch({ type: 'SET_ROOM', room: roomData });
 
             const connectionsData = await GameService.getConnections(roomId, authState.token);
-            dispatch({ type: 'SET_CONNECTIONS', connections: connectionsData });
+
+            // Debugging: Log the connections data
+            console.log("GameContext: Connections data received:", connectionsData);
+
+            // Check if connectionsData is an array before dispatching
+            if (Array.isArray(connectionsData)) {
+                dispatch({ type: 'SET_CONNECTIONS', connections: connectionsData });
+            } else {
+                console.error("GameContext: Invalid connections data received (not an array).");
+                dispatch({ type: 'SET_ERROR', error: 'Invalid connections data received.' });
+            }
 
             dispatch({ type: 'SET_ERROR', error: null });
         } catch (error) {
-            const errorMessage = handleApiError(error, (path) => {
-                // Pøesmìrování na /sign-in v pøípadì chyby autentizace
-                window.location.href = path;
-            });
+            const errorMessage = handleApiError(error);
             dispatch({ type: 'SET_ERROR', error: errorMessage });
         } finally {
             dispatch({ type: 'SET_LOADING', loading: false });
@@ -118,6 +141,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, [authState.token, handleApiError]);
 
     const makeMove = useCallback(async (connectionId: number) => {
+        console.log("GameContext: makeMove called with connectionId:", connectionId);
         if (!authState.token) {
             console.warn("Authentication token is missing.");
             return;
@@ -132,10 +156,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             await loadRoom(moveResult.newRoomId);
             dispatch({ type: 'SET_ERROR', error: null });
         } catch (error) {
-            const errorMessage = handleApiError(error, (path) => {
-                // Pøesmìrování na /sign-in v pøípadì chyby autentizace
-                window.location.href = path;
-            });
+            const errorMessage = handleApiError(error);
             dispatch({ type: 'SET_ERROR', error: errorMessage });
         } finally {
             dispatch({ type: 'SET_LOADING', loading: false });
@@ -143,6 +164,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, [authState.token, loadRoom, handleApiError]);
 
     const updateHP = useCallback((newHp: number) => {
+        console.log("GameContext: updateHP called with newHp:", newHp);
         dispatch({ type: 'UPDATE_HP', hp: newHp });
     }, []);
 
@@ -153,6 +175,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     );
 }
 
+// Custom hook to use the game context
 export function useGame() {
     const context = useContext(GameContext);
     if (!context) {

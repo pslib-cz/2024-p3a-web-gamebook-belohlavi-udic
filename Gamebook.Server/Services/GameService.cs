@@ -29,8 +29,11 @@ namespace Gamebook.Server.Services
                 {
                     _gameLogger.LogInformation($"Resetting existing player for user {userId}");
                     existingPlayer.HP = 100;
-                    existingPlayer.CurrentRoomID = 1;
+                    existingPlayer.CurrentRoomID = 1; // Ensure this is the correct starting room ID
                     existingPlayer.Status = "Active";
+
+                    // Debugging: Log the reset player information
+                    _gameLogger.LogInformation($"CreateNewGame (Reset): Player ID: {existingPlayer.ID}, CurrentRoomID: {existingPlayer.CurrentRoomID}");
 
                     var gameState = new GameState
                     {
@@ -54,10 +57,10 @@ namespace Gamebook.Server.Services
                 {
                     _gameLogger.LogInformation($"Creating new player for user {userId}");
 
-                    var startingRoom = await _dbContext.Rooms.FindAsync(1);
+                    var startingRoom = await _dbContext.Rooms.FindAsync(1); // Assuming 1 is the starting room ID
                     if (startingRoom == null)
                     {
-                        _gameLogger.LogError($"Starting room with id 1 not found");
+                        _gameLogger.LogError($"Starting room with ID 1 not found");
                         throw new InvalidOperationException("Starting room not found");
                     }
 
@@ -70,6 +73,9 @@ namespace Gamebook.Server.Services
                     };
                     _dbContext.Players.Add(newPlayer);
                     await _dbContext.SaveChangesAsync(); // Save to generate player ID
+
+                    // Debugging: Log the new player information
+                    _gameLogger.LogInformation($"CreateNewGame (New): Player ID: {newPlayer.ID}, CurrentRoomID: {newPlayer.CurrentRoomID}");
 
                     var gameState = new GameState
                     {

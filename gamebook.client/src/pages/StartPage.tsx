@@ -21,13 +21,19 @@ export default function StartPage() {
                 throw new Error('Not logged in, cannot start a new game');
             }
             const data = await GameService.startNewGame(token);
+
+            // Debugging: Log the received data
+            console.log("StartPage: Received data from startNewGame:", data);
+
             if (data && data.initialRoomId) {
                 await loadRoom(data.initialRoomId);
                 navigate(`/room/${data.initialRoomId}`);
             } else {
+                console.error("StartPage: Missing initialRoomId in response:", data);
                 throw new Error('Could not start new game - missing initial room');
             }
         } catch (err) {
+            console.error("StartPage: Error starting new game:", err);
             setError(err instanceof Error ? err.message : 'Nastala neznámá chyba');
         } finally {
             setLoading(false);

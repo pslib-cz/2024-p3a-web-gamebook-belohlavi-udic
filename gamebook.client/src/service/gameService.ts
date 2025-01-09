@@ -43,7 +43,7 @@ export class GameService {
 
         const headers = {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Pøidání Bearer tokenu do hlavièky
+            'Authorization': `Bearer ${token}`,
             ...options.headers
         };
 
@@ -53,17 +53,20 @@ export class GameService {
         });
 
         if (response.status === 401) {
-            // Kontrola 401 Unauthorized
             localStorage.removeItem('access_token');
-            window.location.href = '/sign-in'; // Pøesmìrování na pøihlašovací stránku
+            window.location.href = '/sign-in';
             throw new Error('Unauthorized');
         }
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.error("GameService: API Error:", errorData);
             throw new Error(`API call failed: ${response.statusText}, ${errorData.message}`);
         }
-        return response.json();
+
+        const responseData = await response.json();
+        console.log("GameService: API Response:", responseData);
+        return responseData;
     }
 
     static async getCurrentRoom(token: string): Promise<Room> {
@@ -75,7 +78,7 @@ export class GameService {
     }
 
     static async getConnections(roomId: number, token: string): Promise<Connection[]> {
-        return this.fetchWithAuth(`/connections?roomId=${roomId}`, {}, token);
+        return this.fetchWithAuth(`/connections/${roomId}`, {}, token);
     }
 
     static async movePlayer(connectionId: number, token: string): Promise<{
@@ -140,6 +143,8 @@ export class GameService {
         playerId: number;
         initialRoomId: number;
         gameStateId: number;
+        playerHp: number;
+        playerStatus: string;
     }> {
         return this.fetchWithAuth('/players/current', { method: 'GET' }, token);
     }
@@ -150,7 +155,6 @@ export class GameService {
         }, token);
     }
 
-    // Kontrola expirace tokenu
     static isTokenExpired(token: string): boolean {
         if (!token) return true;
         try {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Gamebook.Server.Controllers
 {
@@ -33,6 +34,36 @@ namespace Gamebook.Server.Controllers
                .Include(c => c.Room1)
                .Include(c => c.Room2)
                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets connections for a specific room
+        /// </summary>
+        [HttpGet("{roomId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<Connection>>> GetConnectionsForRoom(int roomId)
+        {
+            _logger.LogInformation($"Getting connections for room {roomId}");
+
+            try
+            {
+                var connections = await _context.Connections
+                    .Where(c => c.RoomID1 == roomId || c.RoomID2 == roomId) // Filter by roomId
+                    .Include(c => c.Room1)
+                    .Include(c => c.Room2)
+                    .ToListAsync();
+
+                // Debugging: Log the connections
+                _logger.LogInformation($"Connections found for room {roomId}: {JsonSerializer.Serialize(connections)}");
+
+                return connections;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while getting connections for room {roomId}");
+                return StatusCode(500, new { message = $"Error while getting connections: {ex.Message}" });
+            }
         }
 
         /// <summary>
