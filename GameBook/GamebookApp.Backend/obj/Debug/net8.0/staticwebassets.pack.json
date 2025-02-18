@@ -1,0 +1,61 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\JungeMainPage.webp",
+      "PackagePath": "staticwebassets\\images\\JungeMainPage.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\KaputScreen2.webp",
+      "PackagePath": "staticwebassets\\images\\KaputScreen2.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\SucessScreen.webp",
+      "PackagePath": "staticwebassets\\images\\SucessScreen.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\bazina.webp",
+      "PackagePath": "staticwebassets\\images\\bazina.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\lesnicesta.webp",
+      "PackagePath": "staticwebassets\\images\\lesnicesta.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\medved.webp",
+      "PackagePath": "staticwebassets\\images\\medved.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\reka.webp",
+      "PackagePath": "staticwebassets\\images\\reka.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\startovnitabor.webp",
+      "PackagePath": "staticwebassets\\images\\startovnitabor.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\starymost.webp",
+      "PackagePath": "staticwebassets\\images\\starymost.webp"
+    },
+    {
+      "Id": "C:\\Users\\setra\\Downloads\\GamebookApp.Backend\\GamebookApp.Backend\\GamebookApp.Backend\\wwwroot\\images\\vodopad.webp",
+      "PackagePath": "staticwebassets\\images\\vodopad.webp"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.GamebookApp.Backend.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.GamebookApp.Backend.props",
+      "PackagePath": "build\\GamebookApp.Backend.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.GamebookApp.Backend.props",
+      "PackagePath": "buildMultiTargeting\\GamebookApp.Backend.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.GamebookApp.Backend.props",
+      "PackagePath": "buildTransitive\\GamebookApp.Backend.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
