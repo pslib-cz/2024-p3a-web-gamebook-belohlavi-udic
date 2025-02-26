@@ -1,8 +1,0 @@
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.csproj.AssemblyReference.cache
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\spa.proxy.json
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.AssemblyInfoInputs.cache
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.AssemblyInfo.cs
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.csproj.CoreCompileInputs.cache
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\Dav1d\source\repos\Gamebook\Gamebook.Server\obj\Debug\net8.0\Gamebook.Server.MvcApplicationPartsAssemblyInfo.cache
