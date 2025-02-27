@@ -1,4 +1,4 @@
-﻿using GamebookApp.Backend.Data;
+using GamebookApp.Backend.Data;
 using GamebookApp.Backend.Models;
 using GamebookApp.Backend.Services;
 using Microsoft.AspNetCore.Mvc;
