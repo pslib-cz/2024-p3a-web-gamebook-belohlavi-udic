@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useGame } from "../../contexts/GameContext";
 import { useNavigate } from 'react-router-dom';
 import { MoveRight, MoveLeft, ArrowUp, 
@@ -11,6 +11,40 @@ import { Exit } from "../../types";
 const Room: React.FC = () => {
     const navigate = useNavigate();
     const gameContext = useGame();
+    const [buttonPosition, setButtonPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+
+    // Initialize button position
+    useEffect(() => {
+        if (gameContext?.currentRoom?.name === "Jeskyně s medvědem" && gameContext.isFighting) {
+            randomizeButtonPosition();
+        }
+    }, [gameContext?.currentRoom?.name, gameContext?.isFighting]);
+
+    // Function to randomize button position
+    const randomizeButtonPosition = () => {
+        const containerWidth = window.innerWidth - 200; // Subtracting button width
+        const containerHeight = window.innerHeight - 100; // Subtracting button height
+        
+        // Safe margins to keep button visible
+        const minTop = 200; // Keep it below title area
+        const maxTop = containerHeight - 100;
+        const minLeft = 20;
+        const maxLeft = containerWidth - 200;
+        
+        // Generate random position within safe bounds
+        const newTop = Math.floor(Math.random() * (maxTop - minTop) + minTop);
+        const newLeft = Math.floor(Math.random() * (maxLeft - minLeft) + minLeft);
+        
+        setButtonPosition({ top: newTop, left: newLeft });
+    };
+
+    // Combined handler for attack and button movement
+    const handleAttackAndMove = async () => {
+        if (gameContext?.attackBear) {
+            await gameContext.attackBear();
+            randomizeButtonPosition();
+        }
+    };
 
     if (!gameContext) {
         return <div className={styles.loading}>Načítání...</div>;
@@ -23,7 +57,6 @@ const Room: React.FC = () => {
         isLoading, 
         error, 
         resetGame, 
-        attackBear,
         bearHP,
         isFighting 
     } = gameContext;
@@ -75,8 +108,17 @@ const Room: React.FC = () => {
                                 <p className={styles.combatDescription}>
                                     Každou sekundu ztrácíš 10 HP! Útok způsobí 40-60 poškození medvědovi.
                                 </p>
-                                <div className={styles.bearFightControls}>
-                                    <button onClick={attackBear} className={styles.fightButton}>
+                                <div className={styles.bearFightContainer}>
+                                    <button 
+                                        onClick={handleAttackAndMove} 
+                                        className={styles.fightButton}
+                                        style={{
+                                            position: 'absolute',
+                                            top: `${buttonPosition.top}px`,
+                                            left: `${buttonPosition.left}px`,
+                                            zIndex: 100
+                                        }}
+                                    >
                                         <Swords className={styles.fightIcon} size={24} />
                                         <span>Útok! (-40-60 HP)</span>
                                     </button>
