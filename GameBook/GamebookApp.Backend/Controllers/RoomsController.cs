@@ -1,53 +1,92 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GamebookApp.Backend.Data;
 using GamebookApp.Backend.Models;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace GamebookApp.Backend.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class RoomsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RoomsController : ControllerBase
+    private readonly AppDbContext _context;
+    private readonly ILogger<RoomsController> _logger;
+
+    public RoomsController(AppDbContext context, ILogger<RoomsController> logger)
     {
-        private readonly AppDbContext _context;
-        private readonly ILogger<RoomsController> _logger;
+        _context = context;
+        _logger = logger;
+    }
 
-        public RoomsController(AppDbContext context, ILogger<RoomsController> logger)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+    {
+        return await _context.Rooms
+            .Include(r => r.Exits)
+            .ToListAsync();
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Room>> GetRoom(int id)
+    {
+        _logger.LogInformation($"GetRoom called with id: {id}");
+
+        var room = await _context.Rooms
+            .Include(r => r.Exits)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (room == null)
         {
-            _context = context;
-            _logger = logger;
+            _logger.LogError($"Room with id: {id} not found.");
+            return NotFound();
         }
 
-        // GET: api/Rooms
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Room>>> GetRooms()
+        _logger.LogInformation($"Room found: Name: {room.Name}, ImagePath: {room.ImagePath}");
+        return room;
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Room>> CreateRoom(Room room)
+    {
+        _context.Rooms.Add(room);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateRoom(int id, Room room)
+    {
+        if (id != room.Id)
+            return BadRequest();
+
+        _context.Entry(room).State = EntityState.Modified;
+
+        try
         {
-            return await _context.Rooms.ToListAsync();
+            await _context.SaveChangesAsync();
         }
-
-        // GET: api/Rooms/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Room>> GetRoom(int id)
+        catch (DbUpdateConcurrencyException)
         {
-            _logger.LogInformation($"GetRoom called with id: {id}");
-
-            var room = await _context.Rooms
-                .Include(r => r.Exits) 
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (room == null)
-            {
-                _logger.LogError($"Room with id: {id} not found.");
+            if (!RoomExists(id))
                 return NotFound();
-            }
-
-            _logger.LogInformation($"Room found: Name: {room.Name}, ImagePath: {room.ImagePath}");
-
-            return room;
+            throw;
         }
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRoom(int id)
+    {
+        var room = await _context.Rooms.FindAsync(id);
+        if (room == null)
+            return NotFound();
+
+        _context.Rooms.Remove(room);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    private bool RoomExists(int id)
+    {
+        return _context.Rooms.Any(e => e.Id == id);
     }
 }
