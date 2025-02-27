@@ -1,5 +1,5 @@
 import React from 'react';
-import './HealthBar.css';
+import styles from './BearHealthBar.module.css';
 
 interface BearHealthBarProps {
     hp: number;
@@ -10,14 +10,13 @@ const BearHealthBar: React.FC<BearHealthBarProps> = ({ hp, maxHp }) => {
     const percentage = (hp / maxHp) * 100;
     
     return (
-        <div className="health-bar-container bear-health">
-            <div className="health-bar-label">Medvěd HP: {hp}/{maxHp}</div>
-            <div className="health-bar-outer">
+        <div className={styles.container}>
+            <div className={styles.label}>Medvěd HP: {hp}/{maxHp}</div>
+            <div className={styles.outer}>
                 <div 
-                    className="health-bar-inner"
+                    className={styles.inner}
                     style={{
-                        width: `${percentage}%`,
-                        backgroundColor: '#e74c3c'
+                        width: `${percentage}%`
                     }}
                 />
             </div>

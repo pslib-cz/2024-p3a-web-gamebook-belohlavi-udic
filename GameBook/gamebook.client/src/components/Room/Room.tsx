@@ -1,24 +1,19 @@
 import React from "react";
-import { useGame } from "../context/GameContext";
+import { useGame } from "../../contexts/GameContext";
 import { useNavigate } from 'react-router-dom';
 import { MoveRight, MoveLeft, ArrowUp, 
          MoveHorizontal, RefreshCw, Home, Swords } from "lucide-react";
-import HealthBar from './HealthBar';
-import BearHealthBar from './BearHealthBar';
-import './Room.css';
-
-interface Exit {
-    id: number;
-    direction: string;
-    targetRoomId: number;
-}
+import HealthBar from '../HealthBar/HealthBar';
+import BearHealthBar from '../BearHealthBar/BearHealthBar';
+import styles from './Room.module.css';
+import { Exit } from "../../types";
 
 const Room: React.FC = () => {
     const navigate = useNavigate();
     const gameContext = useGame();
 
     if (!gameContext) {
-        return <div className="loading">Načítání...</div>;
+        return <div className={styles.loading}>Načítání...</div>;
     }
 
     const { 
@@ -33,9 +28,9 @@ const Room: React.FC = () => {
         isFighting 
     } = gameContext;
 
-    if (isLoading) return <div className="loading">Načítání místnosti...</div>;
-    if (error) return <div className="error">{error}</div>;
-    if (!currentRoom) return <div className="error">Místnost není k dispozici.</div>;
+    if (isLoading) return <div className={styles.loading}>Načítání místnosti...</div>;
+    if (error) return <div className={styles.error}>{error}</div>;
+    if (!currentRoom) return <div className={styles.error}>Místnost není k dispozici.</div>;
 
     const isGameOver = currentRoom.name === "Konec hry";
     const isVictory = currentRoom.name === "Bezpečná zóna";
@@ -49,40 +44,40 @@ const Room: React.FC = () => {
         switch (direction) {
             case 'Jít na východ':
             case 'Přejít most rychle':
-                return <MoveRight className="direction-icon" size={32} />;
+                return <MoveRight className={styles.directionIcon} size={32} />;
             case 'Jít na západ':
             case 'Vrátit se':
             case 'Otočit se a jít zpět':
-                return <MoveLeft className="direction-icon" size={32} />;
+                return <MoveLeft className={styles.directionIcon} size={32} />;
             case 'Přeskočit past':
-                return <ArrowUp className="direction-icon" size={32} />;
+                return <ArrowUp className={styles.directionIcon} size={32} />;
             default:
-                return <MoveHorizontal className="direction-icon" size={32} />;
+                return <MoveHorizontal className={styles.directionIcon} size={32} />;
         }
     };
 
     return (
-        <div className="room-container" style={{
+        <div className={styles.container} style={{
             backgroundImage: currentRoom.imageUrl ? `url('${currentRoom.imageUrl}')` : undefined,
         }}>
             {player && <HealthBar hp={player.hp} maxHp={100} />}
             {isBearRoom && isFighting && <BearHealthBar hp={bearHP} maxHp={500} />}
             
-            <div className="room-card">
-                <h2 className="room-title">{currentRoom.name}</h2>
-                <p className="room-description">{currentRoom.description}</p>
+            <div className={styles.card}>
+                <h2 className={styles.title}>{currentRoom.name}</h2>
+                <p className={styles.description}>{currentRoom.description}</p>
 
                 {!isGameOver && !isVictory && (
-                    <div className="exits-container">
+                    <div>
                         {isBearRoom && isFighting ? (
                             <>
-                                <p className="warning-text">SOUBOJ S MEDVĚDEM!</p>
-                                <p className="combat-description">
+                                <p className={styles.warningText}>SOUBOJ S MEDVĚDEM!</p>
+                                <p className={styles.combatDescription}>
                                     Každou sekundu ztrácíš 10 HP! Útok způsobí 40-60 poškození medvědovi.
                                 </p>
-                                <div className="bear-fight-controls">
-                                    <button onClick={attackBear} className="fight-button">
-                                        <Swords className="fight-icon" size={24} />
+                                <div className={styles.bearFightControls}>
+                                    <button onClick={attackBear} className={styles.fightButton}>
+                                        <Swords className={styles.fightIcon} size={24} />
                                         <span>Útok! (-40-60 HP)</span>
                                     </button>
                                 </div>
@@ -90,18 +85,18 @@ const Room: React.FC = () => {
                         ) : (
                             currentRoom.exits && currentRoom.exits.length > 0 && (
                                 <>
-                                    <p className="warning-text">VYBER SI POKRAČOVÁNÍ HRY</p>
-                                    <div className="exits-grid">
+                                    <p className={styles.warningText}>VYBER SI POKRAČOVÁNÍ HRY</p>
+                                    <div className={styles.exitsGrid}>
                                         {currentRoom.exits.map((exit: Exit) => (
                                             <button
                                                 key={exit.direction}
                                                 onClick={() => movePlayer(exit.targetRoomId)}
-                                                className="direction-card"
+                                                className={styles.directionCard}
                                             >
-                                                <div className="direction-content">
+                                                <div className={styles.directionContent}>
                                                     {getDirectionIcon(exit.direction)}
-                                                    <div className="direction-text">
-                                                        <div className="direction-main">{exit.direction}</div>
+                                                    <div className={styles.directionText}>
+                                                        <div className={styles.directionMain}>{exit.direction}</div>
                                                     </div>
                                                 </div>
                                             </button>
@@ -113,22 +108,22 @@ const Room: React.FC = () => {
                     </div>
                 )}
 
-                <div className="game-end-container">
+                <div className={styles.gameEndContainer}>
                     {isGameOver && (
-                        <button onClick={resetGame} className="restart-button">
-                            <RefreshCw className="restart-icon" size={24} />
+                        <button onClick={resetGame} className={styles.restartButton}>
+                            <RefreshCw className={styles.restartIcon} size={24} />
                             <span>Začít znovu</span>
                         </button>
                     )}
                     
                     {isVictory && (
                         <>
-                            <button onClick={handleReturnToMenu} className="menu-button">
-                                <Home className="menu-icon" size={24} />
+                            <button onClick={handleReturnToMenu} className={styles.menuButton}>
+                                <Home className={styles.menuIcon} size={24} />
                                 <span>Zpět do menu</span>
                             </button>
-                            <button onClick={resetGame} className="restart-button">
-                                <RefreshCw className="restart-icon" size={24} />
+                            <button onClick={resetGame} className={styles.restartButton}>
+                                <RefreshCw className={styles.restartIcon} size={24} />
                                 <span>Hrát znovu</span>
                             </button>
                         </>

@@ -1,0 +1,27 @@
+:root {
+    /* Colors */
+    --primary-dark: #2F4F2F;
+    --primary-light: #3a6a3a;
+    --accent-gold: #FFD700;
+    --accent-light: #FFF8DC;
+    --warning: #F0C800;
+    --danger: #e74c3c;
+    --success: #4CAF50;
+    --text-light: #ffffff;
+    --text-dark: #121212;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
+    
+    /* Border Radius */
+    --card-border-radius: 20px;
+    --button-border-radius: 8px;
+    --input-border-radius: 8px;
+    
+    /* Animations */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+  }

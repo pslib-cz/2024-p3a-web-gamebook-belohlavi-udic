@@ -1,5 +1,5 @@
 import React from 'react';
-import './HealthBar.css';
+import styles from './HealthBar.module.css';
 
 interface HealthBarProps {
     hp: number;
@@ -16,11 +16,11 @@ const HealthBar: React.FC<HealthBarProps> = ({ hp, maxHp }) => {
     };
 
     return (
-        <div className="health-bar-container">
-            <div className="health-bar-label">{hp} / {maxHp} HP</div>
-            <div className="health-bar-outer">
+        <div className={styles.container}>
+            <div className={styles.label}>{hp} / {maxHp} HP</div>
+            <div className={styles.outer}>
                 <div 
-                    className="health-bar-inner"
+                    className={styles.inner}
                     style={{
                         width: `${percentage}%`,
                         backgroundColor: getHealthColor()
