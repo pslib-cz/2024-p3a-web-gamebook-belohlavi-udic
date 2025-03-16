@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.new
+          file: ./Dockerfile
           push: true
           tags: registry.pslib.cloud/sandbox/app-51:latest
           cache-from: type=gha
