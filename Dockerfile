@@ -45,6 +45,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 # Install nginx for serving frontend and PostgreSQL client for DB connectivity
 RUN apt-get update && apt-get install -y nginx postgresql-client && rm -rf /var/lib/apt/lists/*
 
+# Create required nginx directories with proper permissions
+RUN mkdir -p /var/log/nginx /var/lib/nginx/body /run && \
+    chmod -R 755 /var/log/nginx /var/lib/nginx /run
+
 # Copy backend build
 WORKDIR /app/backend
 COPY --from=backend-publish /app/publish .
@@ -60,16 +64,12 @@ RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
 
 # Make sure application can only write to /data
-RUN chmod -R 555 /app
+RUN chmod -R 555 /app/backend && chmod -R 555 /app/frontend
 
 # Create startup script
 WORKDIR /app
 COPY ./startup.sh /app/startup.sh
 RUN chmod +x /app/startup.sh
-
-# Create runtime directories with proper permissions
-RUN mkdir -p /var/log/nginx /var/lib/nginx /run/nginx
-RUN chmod -R 755 /var/log/nginx /var/lib/nginx /run/nginx
 
 EXPOSE 80
 ENV ASPNETCORE_URLS=http://+:5000
