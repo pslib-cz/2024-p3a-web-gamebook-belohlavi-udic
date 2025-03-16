@@ -5,6 +5,15 @@ WORKDIR /src
 # Copy solution and project files
 COPY GameBook/GamebookApp.Backend.sln ./
 COPY GameBook/GamebookApp.Backend/*.csproj ./GamebookApp.Backend/
+
+# Install PostgreSQL client for database connectivity
+RUN apt-get update && apt-get install -y postgresql-client
+
+# Install EF Core tools and PostgreSQL package
+RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Npgsql.EntityFrameworkCore.PostgreSQL
+RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Microsoft.EntityFrameworkCore.Design
+
+# Restore dependencies
 RUN dotnet restore
 
 # Copy everything else and build
@@ -33,7 +42,7 @@ RUN npm run build
 ### FINAL STAGE ###
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 
-# Install nginx for serving frontend
+# Install nginx for serving frontend and PostgreSQL client for DB connectivity
 RUN apt-get update && apt-get install -y nginx postgresql-client && rm -rf /var/lib/apt/lists/*
 
 # Copy backend build
@@ -50,10 +59,20 @@ COPY ./nginx.conf /etc/nginx/sites-available/default
 RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
 
+# Make sure application can only write to /data
+RUN chmod -R 555 /app
+
 # Create startup script
 WORKDIR /app
 COPY ./startup.sh /app/startup.sh
 RUN chmod +x /app/startup.sh
 
+# Create runtime directories with proper permissions
+RUN mkdir -p /var/log/nginx /var/lib/nginx /run/nginx
+RUN chmod -R 755 /var/log/nginx /var/lib/nginx /run/nginx
+
 EXPOSE 80
+ENV ASPNETCORE_URLS=http://+:5000
+ENV DatabasePath=/data
+
 CMD ["/app/startup.sh"]
