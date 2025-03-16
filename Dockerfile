@@ -3,12 +3,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS backend-build
 WORKDIR /src
 
 # Copy solution and project files
-COPY GamebookApp.Backend.sln ./
-COPY GamebookApp.Backend/*.csproj ./GamebookApp.Backend/
+COPY GameBook/GamebookApp.Backend.sln ./
+COPY GameBook/GamebookApp.Backend/*.csproj ./GamebookApp.Backend/
 RUN dotnet restore
 
 # Copy everything else and build
-COPY GamebookApp.Backend/. ./GamebookApp.Backend/
+COPY GameBook/GamebookApp.Backend/. ./GamebookApp.Backend/
 WORKDIR "/src/GamebookApp.Backend"
 RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
 
@@ -21,11 +21,11 @@ FROM node:20-alpine AS frontend-build
 WORKDIR /app
 
 # Copy package.json and install dependencies
-COPY gamebook.client/package*.json ./
+COPY GameBook/gamebook.client/package*.json ./
 RUN npm ci
 
 # Copy frontend code and build
-COPY gamebook.client/. ./
+COPY GameBook/gamebook.client/. ./
 # Ensure we have the correct environment configuration
 RUN echo "VITE_API_URL=/api" > .env
 RUN npm run build
