@@ -1,23 +1,24 @@
 #!/bin/bash
 set -e
 
-# Create necessary directories with proper permissions
+# Ensure data directory exists with proper permissions
+mkdir -p /data/logs
+chmod -R 777 /data
+
+# Create necessary nginx directories with proper permissions
 mkdir -p /var/log/nginx
 mkdir -p /var/lib/nginx/body
 mkdir -p /run
 
-# Set proper permissions
-chmod -R 755 /var/log/nginx
-chmod -R 755 /var/lib/nginx
-chmod 755 /run
-
-# Remove any existing PID files
+# Clean up any existing PID files
 rm -f /run/nginx.pid
 rm -f /var/run/nginx.pid
 
-# Start nginx properly (not as a daemon so container can monitor it)
+# Start nginx in the background
 nginx &
-nginx_pid=$!
+
+# Wait a moment for nginx to start
+sleep 2
 
 # Run the .NET backend application
 cd /app/backend
