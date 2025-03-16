@@ -1,4 +1,4 @@
-name: Nasazení na Sandbox
+name: Nasazenï¿½ na Sandbox
 
 on:
   release:
@@ -10,25 +10,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Naklonování repozitáre
+      - name: Naklonovï¿½nï¿½ repozitï¿½re
         uses: actions/checkout@v4
 
-      - name: Prihlášení se k Sandboxu
+      - name: Prihlï¿½enï¿½ se k Sandboxu
         uses: docker/login-action@v3
         with:
           username: ignored
           password: ${{ secrets.SANDBOX_BUILD_TOKEN }}
           registry: registry.pslib.cloud
 
-      - name: Nainstalování Docker Buildx
+      - name: Nainstalovï¿½nï¿½ Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Sestavení a nahrání kontejnerového obrazu
+      - name: Sestavenï¿½ a nahrï¿½nï¿½ kontejnerovï¿½ho obrazu
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.pslib.cloud/sandbox/app-35:latest
+          tags: registry.pslib.cloud/sandbox/app-51:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
