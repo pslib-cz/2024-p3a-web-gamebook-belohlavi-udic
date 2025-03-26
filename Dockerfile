@@ -43,7 +43,12 @@ COPY --from=backend-publish /app/publish .
 # Copy frontend build
 COPY --from=frontend-build /app/dist /app/frontend
 
-# Setup nginx configuration - using /data for writable paths
+# Modify nginx main configuration to use /data for logs
+RUN sed -i 's|access_log /var/log/nginx/access.log;|access_log /data/nginx/logs/access.log;|g' /etc/nginx/nginx.conf && \
+    sed -i 's|error_log /var/log/nginx/error.log;|error_log /data/nginx/logs/error.log;|g' /etc/nginx/nginx.conf && \
+    sed -i 's|user www-data;|# user www-data;|g' /etc/nginx/nginx.conf
+
+# Setup nginx configuration for our application
 RUN echo 'server { \
     listen 80; \
     server_name localhost; \
@@ -55,6 +60,9 @@ RUN echo 'server { \
     fastcgi_temp_path /data/nginx/fastcgi; \
     uwsgi_temp_path /data/nginx/uwsgi; \
     scgi_temp_path /data/nginx/scgi; \
+    \
+    access_log /data/nginx/logs/access.log; \
+    error_log /data/nginx/logs/error.log; \
     \
     location / { \
         try_files $uri $uri/ /index.html; \
@@ -81,8 +89,10 @@ VOLUME ["/data"]
 
 # Direct command with corrected paths
 EXPOSE 80
-CMD bash -c "mkdir -p /data/logs /data/nginx/body /data/nginx/proxy /data/nginx/fastcgi /data/nginx/uwsgi /data/nginx/scgi && \
+CMD bash -c "mkdir -p /data/logs /data/nginx/logs /data/nginx/body /data/nginx/proxy /data/nginx/fastcgi /data/nginx/uwsgi /data/nginx/scgi && \
     chmod -R 777 /data && \
-    nginx && \
+    ln -sf /dev/stdout /data/nginx/logs/access.log && \
+    ln -sf /dev/stderr /data/nginx/logs/error.log && \
+    nginx -g 'daemon off;' & \
     cd /app/backend && \
     dotnet GamebookApp.Backend.dll"
