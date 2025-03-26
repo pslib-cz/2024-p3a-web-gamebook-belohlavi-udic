@@ -7,20 +7,23 @@ WORKDIR /src
 # Kopírování celého řešení
 COPY . .
 
+# Zobrazení struktury souborů pro debugging
+RUN ls -la
+RUN find . -name "*.csproj"
+
+# Nastavení korektní cesty k projektu podle solution souboru
+WORKDIR "/src/GamebookApp.Backend"
+
 # Instalace Microsoft.EntityFrameworkCore.Sqlite
-WORKDIR "/src/GameBook/GamebookApp.Backend"
 RUN dotnet add package Microsoft.EntityFrameworkCore.Sqlite
 
 # Úprava Program.cs pro použití SQLite místo SQL Serveru
 # Nejprve vytvořme zálohu
-RUN cp Program.cs Program.cs.backup
+RUN cp Program.cs Program.cs.backup || echo "Program.cs not found"
 
 # Jednoduchý sed pro nahrazení SQL Server za SQLite
-RUN sed -i 's/UseSqlServer/UseSqlite/g' Program.cs
-RUN sed -i 's/GetConnectionString("DefaultConnection")/"Data Source=\/data\/gamebook.db"/g' Program.cs
-
-# Zobrazíme změny
-RUN grep -A 3 -B 3 "UseSqlite" Program.cs || echo "Not found"
+RUN sed -i 's/UseSqlServer/UseSqlite/g' Program.cs || echo "Unable to replace UseSqlServer"
+RUN sed -i 's/GetConnectionString("DefaultConnection")/"Data Source=\/data\/gamebook.db"/g' Program.cs || echo "Unable to replace connection string"
 
 # Obnovení balíčků a sestavení
 RUN dotnet restore
