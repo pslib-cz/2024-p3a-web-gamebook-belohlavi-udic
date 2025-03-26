@@ -5,18 +5,28 @@ WORKDIR /src
 # Copy solution and project files
 COPY GameBook/GamebookApp.Backend.sln ./
 COPY GameBook/GamebookApp.Backend/*.csproj ./GamebookApp.Backend/
+
+# Install SQLite package
+RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Microsoft.EntityFrameworkCore.Sqlite
+
+# Restore dependencies
 RUN dotnet restore
 
-# Copy everything else and build
+# Copy everything else
 COPY GameBook/GamebookApp.Backend/. ./GamebookApp.Backend/
 
-# Modify connection string in appsettings.json to use SQLite
-RUN sed -i 's|"DefaultConnection": ".*"|"DefaultConnection": "Data Source=/data/gamebook.db"|g' ./GamebookApp.Backend/appsettings.json
+# Modify Program.cs to use SQLite instead of SQL Server
+RUN sed -i 's/builder.Services.AddDbContext<AppDbContext>(options =>/builder.Services.AddDbContext<AppDbContext>(options =>/' ./GamebookApp.Backend/Program.cs
+RUN sed -i 's/options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));/options.UseSqlite("Data Source=\/data\/gamebook.db"));/' ./GamebookApp.Backend/Program.cs
 
+# Update connection string in appsettings.json 
+RUN sed -i 's/"DefaultConnection": ".*"/"DefaultConnection": "Data Source=\/data\/gamebook.db"/' ./GamebookApp.Backend/appsettings.json
+
+# Build the application
 WORKDIR "/src/GamebookApp.Backend"
 RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
 
-# Publish backend
+# Publish the application
 FROM backend-build AS backend-publish
 RUN dotnet publish "GamebookApp.Backend.csproj" -c Release -o /app/publish
 
@@ -91,9 +101,6 @@ RUN echo 'server { \
 # Create necessary directories and set up volumes in writable /data
 RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
-
-# Set environment variable for database
-ENV ConnectionStrings__DefaultConnection="Data Source=/data/gamebook.db"
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
