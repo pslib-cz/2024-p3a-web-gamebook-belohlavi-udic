@@ -1,88 +1,78 @@
-### BACKEND BUILD STAGE ###
+# BACKEND BUILD STAGE
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS backend-build
 WORKDIR /src
 
-# Copy the solution and project files first for better layer caching
+# Copy solution and project files
 COPY GameBook/GamebookApp.Backend.sln ./
 COPY GameBook/GamebookApp.Backend/*.csproj ./GamebookApp.Backend/
-
-# Install PostgreSQL client and database tools
-RUN apt-get update && apt-get install -y postgresql-client
-
-# Add PostgreSQL and Entity Framework packages
-RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Npgsql.EntityFrameworkCore.PostgreSQL
-RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Microsoft.EntityFrameworkCore.Design
-RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Microsoft.EntityFrameworkCore.Sqlite
-
-# Restore dependencies
 RUN dotnet restore
 
-# Copy backend source code
+# Copy everything else and build
 COPY GameBook/GamebookApp.Backend/. ./GamebookApp.Backend/
-
-# Build and publish
 WORKDIR "/src/GamebookApp.Backend"
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
 
-### FRONTEND BUILD STAGE ###
+# Publish backend
+FROM backend-build AS backend-publish
+RUN dotnet publish "GamebookApp.Backend.csproj" -c Release -o /app/publish
+
+# FRONTEND BUILD STAGE
 FROM node:20-alpine AS frontend-build
 WORKDIR /app
 
-# Copy package.json files for better layer caching
+# Copy package.json and install dependencies
 COPY GameBook/gamebook.client/package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy frontend source code
+# Copy frontend code and build
 COPY GameBook/gamebook.client/. ./
-
-# Set API URL for production
+# Ensure we have the correct environment configuration
 RUN echo "VITE_API_URL=/api" > .env
-
-# Build the frontend
 RUN npm run build
 
-### FINAL STAGE ###
+# FINAL STAGE
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 
-# Install nginx and PostgreSQL client
-RUN apt-get update && \
-    apt-get install -y nginx postgresql-client && \
-    rm -rf /var/lib/apt/lists/*
+# Install nginx for serving frontend
+RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
-# Set up Nginx directories and permissions
-RUN mkdir -p /var/log/nginx /var/lib/nginx/body /run && \
-    chmod -R 755 /var/log/nginx /var/lib/nginx /run
-
-# Copy the published backend
+# Copy backend build
 WORKDIR /app/backend
-COPY --from=backend-build /app/publish .
+COPY --from=backend-publish /app/publish .
 
-# Copy the built frontend
-WORKDIR /app/frontend
-COPY --from=frontend-build /app/dist .
+# Copy frontend build
+COPY --from=frontend-build /app/dist /app/frontend
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/sites-available/default
+# Setup nginx configuration - creating inline
+RUN echo 'server { \
+    listen 80; \
+    server_name localhost; \
+    root /app/frontend; \
+    index index.html; \
+    \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    \
+    location /api/ { \
+        proxy_pass http://localhost:5000/api/; \
+        proxy_http_version 1.1; \
+        proxy_set_header Upgrade $http_upgrade; \
+        proxy_set_header Connection keep-alive; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
+        proxy_set_header X-Forwarded-Proto $scheme; \
+    } \
+    \
+    location /images/ { \
+        alias /app/backend/wwwroot/images/; \
+    } \
+}' > /etc/nginx/sites-available/default
 
-# Create and set up data directory
+# Create necessary directories and set up volumes
 RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
 
-# Copy startup script
-WORKDIR /app
-COPY startup.sh .
-RUN chmod +x startup.sh
-
-# Ensure proper file permissions
-RUN chmod -R 555 /app/backend && chmod -R 555 /app/frontend
-
-# Environment variables
-ENV ASPNETCORE_URLS=http://+:5000
-ENV DatabasePath=/data
-
+# Direct command to run both services
 EXPOSE 80
-
-# Start the application
-CMD ["/app/startup.sh"]
+CMD bash -c "mkdir -p /data/logs && chmod -R 777 /data && mkdir -p /var/log/nginx /var/lib/nginx/body /run && nginx && cd /app/backend && dotnet GamebookApp.Backend.dll"
