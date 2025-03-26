@@ -2,47 +2,25 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS backend-build
 WORKDIR /src
 
-# Copy solution and project files
-COPY GameBook/GamebookApp.Backend.sln ./
-COPY GameBook/GamebookApp.Backend/*.csproj ./GamebookApp.Backend/
+# Debug: List directory to see the structure
+RUN ls -la
 
-# Install SQLite package
-RUN dotnet add ./GamebookApp.Backend/GamebookApp.Backend.csproj package Microsoft.EntityFrameworkCore.Sqlite
+# Copy entire solution directory first
+COPY . .
 
-# Restore dependencies
-RUN dotnet restore
+# Debug: List directory to see what was copied
+RUN ls -la
 
-# Copy everything else
-COPY GameBook/GamebookApp.Backend/. ./GamebookApp.Backend/
+# Find the .sln file (more robust)
+RUN find . -name "*.sln" | head -1 > sln_path.txt
+RUN cat sln_path.txt
 
-# Modify Program.cs to use SQLite instead of SQL Server
-RUN sed -i 's/builder.Services.AddDbContext<AppDbContext>(options =>/builder.Services.AddDbContext<AppDbContext>(options =>/' ./GamebookApp.Backend/Program.cs
-RUN sed -i 's/options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));/options.UseSqlite("Data Source=\/data\/gamebook.db"));/' ./GamebookApp.Backend/Program.cs
+# Build the solution
+RUN dotnet restore $(cat sln_path.txt)
+RUN dotnet build $(cat sln_path.txt) -c Release -o /app/build
 
-# Update connection string in appsettings.json 
-RUN sed -i 's/"DefaultConnection": ".*"/"DefaultConnection": "Data Source=\/data\/gamebook.db"/' ./GamebookApp.Backend/appsettings.json
-
-# Build the application
-WORKDIR "/src/GamebookApp.Backend"
-RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
-
-# Publish the application
-FROM backend-build AS backend-publish
-RUN dotnet publish "GamebookApp.Backend.csproj" -c Release -o /app/publish
-
-# FRONTEND BUILD STAGE
-FROM node:20-alpine AS frontend-build
-WORKDIR /app
-
-# Copy package.json and install dependencies
-COPY GameBook/gamebook.client/package*.json ./
-RUN npm ci
-
-# Copy frontend code and build
-COPY GameBook/gamebook.client/. ./
-# Ensure we have the correct environment configuration
-RUN echo "VITE_API_URL=/api" > .env
-RUN npm run build
+# Publish the application using the solution path
+RUN dotnet publish $(cat sln_path.txt) -c Release -o /app/publish
 
 # FINAL STAGE
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -52,10 +30,11 @@ RUN apt-get update && apt-get install -y nginx sqlite3 && rm -rf /var/lib/apt/li
 
 # Copy backend build
 WORKDIR /app/backend
-COPY --from=backend-publish /app/publish .
+COPY --from=backend-build /app/publish .
 
-# Copy frontend build
-COPY --from=frontend-build /app/dist /app/frontend
+# Setup frontend if it exists
+WORKDIR /app/frontend
+COPY wwwroot ./
 
 # Modify nginx main configuration to use /data for logs and PID
 RUN sed -i 's|access_log /var/log/nginx/access.log;|access_log /data/nginx/logs/access.log;|g' /etc/nginx/nginx.conf && \
@@ -92,15 +71,14 @@ RUN echo 'server { \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
         proxy_set_header X-Forwarded-Proto $scheme; \
     } \
-    \
-    location /images/ { \
-        alias /app/backend/wwwroot/images/; \
-    } \
 }' > /etc/nginx/sites-available/default
 
 # Create necessary directories and set up volumes in writable /data
 RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
+
+# Set environment variables for database (SQLite)
+ENV ConnectionStrings__DefaultConnection="Data Source=/data/gamebook.db"
 
 # Create startup script
 RUN echo '#!/bin/bash\n\
