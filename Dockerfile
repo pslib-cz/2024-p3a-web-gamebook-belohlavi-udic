@@ -43,12 +43,18 @@ COPY --from=backend-publish /app/publish .
 # Copy frontend build
 COPY --from=frontend-build /app/dist /app/frontend
 
-# Setup nginx configuration - creating inline
+# Setup nginx configuration - using /data for writable paths
 RUN echo 'server { \
     listen 80; \
     server_name localhost; \
     root /app/frontend; \
     index index.html; \
+    \
+    client_body_temp_path /data/nginx/body; \
+    proxy_temp_path /data/nginx/proxy; \
+    fastcgi_temp_path /data/nginx/fastcgi; \
+    uwsgi_temp_path /data/nginx/uwsgi; \
+    scgi_temp_path /data/nginx/scgi; \
     \
     location / { \
         try_files $uri $uri/ /index.html; \
@@ -69,10 +75,14 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/sites-available/default
 
-# Create necessary directories and set up volumes
+# Create necessary directories and set up volumes in writable /data
 RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
 
-# Direct command to run both services
+# Direct command with corrected paths
 EXPOSE 80
-CMD bash -c "mkdir -p /data/logs && chmod -R 777 /data && mkdir -p /var/log/nginx /var/lib/nginx/body /run && nginx && cd /app/backend && dotnet GamebookApp.Backend.dll"
+CMD bash -c "mkdir -p /data/logs /data/nginx/body /data/nginx/proxy /data/nginx/fastcgi /data/nginx/uwsgi /data/nginx/scgi && \
+    chmod -R 777 /data && \
+    nginx && \
+    cd /app/backend && \
+    dotnet GamebookApp.Backend.dll"
