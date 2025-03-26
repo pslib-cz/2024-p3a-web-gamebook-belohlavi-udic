@@ -9,6 +9,10 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY GameBook/GamebookApp.Backend/. ./GamebookApp.Backend/
+
+# Modify connection string in appsettings.json to use SQLite
+RUN sed -i 's|"DefaultConnection": ".*"|"DefaultConnection": "Data Source=/data/gamebook.db"|g' ./GamebookApp.Backend/appsettings.json
+
 WORKDIR "/src/GamebookApp.Backend"
 RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
 
@@ -33,8 +37,8 @@ RUN npm run build
 # FINAL STAGE
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 
-# Install nginx for serving frontend
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Install nginx and SQLite
+RUN apt-get update && apt-get install -y nginx sqlite3 && rm -rf /var/lib/apt/lists/*
 
 # Copy backend build
 WORKDIR /app/backend
@@ -43,9 +47,10 @@ COPY --from=backend-publish /app/publish .
 # Copy frontend build
 COPY --from=frontend-build /app/dist /app/frontend
 
-# Modify nginx main configuration to use /data for logs
+# Modify nginx main configuration to use /data for logs and PID
 RUN sed -i 's|access_log /var/log/nginx/access.log;|access_log /data/nginx/logs/access.log;|g' /etc/nginx/nginx.conf && \
     sed -i 's|error_log /var/log/nginx/error.log;|error_log /data/nginx/logs/error.log;|g' /etc/nginx/nginx.conf && \
+    sed -i 's|pid /run/nginx.pid;|pid /data/nginx/nginx.pid;|g' /etc/nginx/nginx.conf && \
     sed -i 's|user www-data;|# user www-data;|g' /etc/nginx/nginx.conf
 
 # Setup nginx configuration for our application
@@ -87,12 +92,20 @@ RUN echo 'server { \
 RUN mkdir -p /data && chmod 777 /data
 VOLUME ["/data"]
 
+# Set environment variable for database
+ENV ConnectionStrings__DefaultConnection="Data Source=/data/gamebook.db"
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+mkdir -p /data/logs /data/nginx/logs /data/nginx/body /data/nginx/proxy /data/nginx/fastcgi /data/nginx/uwsgi /data/nginx/scgi\n\
+chmod -R 777 /data\n\
+ln -sf /dev/stdout /data/nginx/logs/access.log\n\
+ln -sf /dev/stderr /data/nginx/logs/error.log\n\
+cd /app/backend\n\
+nginx -g "daemon off;" &\n\
+dotnet GamebookApp.Backend.dll\n' > /app/start.sh && \
+chmod +x /app/start.sh
+
 # Direct command with corrected paths
 EXPOSE 80
-CMD bash -c "mkdir -p /data/logs /data/nginx/logs /data/nginx/body /data/nginx/proxy /data/nginx/fastcgi /data/nginx/uwsgi /data/nginx/scgi && \
-    chmod -R 777 /data && \
-    ln -sf /dev/stdout /data/nginx/logs/access.log && \
-    ln -sf /dev/stderr /data/nginx/logs/error.log && \
-    nginx -g 'daemon off;' & \
-    cd /app/backend && \
-    dotnet GamebookApp.Backend.dll"
+CMD ["/app/start.sh"]
