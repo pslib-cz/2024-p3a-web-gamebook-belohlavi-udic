@@ -7,7 +7,7 @@ RUN dotnet restore "GamebookApp.Backend/GamebookApp.Backend.csproj"
 
 # Copy everything else and build
 COPY . .
-WORKDIR "/src/GamebookApp.Backend"
+WORKDIR "/src/GameBook/GamebookApp.Backend"
 RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
 
 # Publish
