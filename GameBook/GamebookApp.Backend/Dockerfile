@@ -15,7 +15,7 @@ RUN mkdir -p ~/.aspnet/https
 WORKDIR /src/Gamebook
 COPY ["GameBook/GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Server/"]
 COPY ["GameBook/gamebook.client/gamebook.client.esproj", "gamebook.client/"]
-RUN dotnet restore "./GamebookApp.Server/GamebookApp.Server.csproj"
+RUN dotnet restore "./GamebookApp.Server/GamebookApp.Backend.csproj"
 COPY . .
 WORKDIR "/src/GamebookApp/GamebookApp.Server"
 RUN dotnet build "Gamebook/GamebookApp.Backend/GamebookApp.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/build
