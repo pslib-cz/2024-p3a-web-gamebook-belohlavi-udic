@@ -13,13 +13,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 RUN apt update && apt install nodejs npm -y
 RUN mkdir -p ~/.aspnet/https
-WORKDIR /src
-COPY ["gamebook.client/nuget.config", "gamebook.client/"]
-COPY ["GamebookApp.Server/GamebookApp.Server.csproj", "GamebookApp.Server/"]
-COPY ["gamebook.client/gamebook.client.esproj", "gamebook.client/"]
-RUN dotnet restore "./Pokebooook.Server/Pokebooook.Server.csproj"
+WORKDIR /src/Gamebook
+COPY ["./GamebookApp.Server/GamebookApp.Server.csproj", "GamebookApp.Server/"]
+COPY ["./gamebook.client/gamebook.client.esproj", "gamebook.client/"]
+RUN dotnet restore "./GamebookApp.Server/GamebookApp.Server.csproj"
 COPY . .
-WORKDIR "/src/GamebookApp.Server"
+WORKDIR "/src/GamebookApp/GamebookApp.Server"
 RUN dotnet build "./GamebookApp.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
