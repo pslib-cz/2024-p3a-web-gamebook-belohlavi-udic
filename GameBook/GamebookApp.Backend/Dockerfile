@@ -13,8 +13,8 @@ ARG BUILD_CONFIGURATION=Release
 RUN apt update && apt install nodejs npm -y
 RUN mkdir -p ~/.aspnet/https
 WORKDIR /src/Gamebook
-COPY ["Gamebook/GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Server/"]
-COPY ["Gamebook/gamebook.client/gamebook.client.esproj", "gamebook.client/"]
+COPY ["GameBook/GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Server/"]
+COPY ["GameBook/gamebook.client/gamebook.client.esproj", "gamebook.client/"]
 RUN dotnet restore "./GamebookApp.Server/GamebookApp.Server.csproj"
 COPY . .
 WORKDIR "/src/GamebookApp/GamebookApp.Server"
