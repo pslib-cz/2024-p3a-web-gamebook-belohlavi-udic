@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("4a5e4290-e350-4763-b6d4-eacd70933bac")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("GamebookApp.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c4b20df26bd8344529e9d6b989d295be9644efb0")]
 [assembly: System.Reflection.AssemblyProductAttribute("GamebookApp.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GamebookApp.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

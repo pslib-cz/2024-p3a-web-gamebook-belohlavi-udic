@@ -1,35 +1,34 @@
+;
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER $APP_UID
+WORKDIR /app
+EXPOSE 8080
+
+
+# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+RUN apt update && apt install nodejs npm -y
+RUN mkdir -p ~/.aspnet/https
 WORKDIR /src
-
-# Copy csproj and restore dependencies
-COPY ["GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Backend/"]
-RUN dotnet restore "GamebookApp.Backend/GamebookApp.Backend.csproj"
-
-# Copy everything else and build
+COPY ["gamebook.client/nuget.config", "gamebook.client/"]
+COPY ["GamebookApp.Server/GamebookApp.Server.csproj", "GamebookApp.Server/"]
+COPY ["gamebook.client/gamebook.client.esproj", "gamebook.client/"]
+RUN dotnet restore "./Pokebooook.Server/Pokebooook.Server.csproj"
 COPY . .
-WORKDIR "/src/GameBook/GamebookApp.Backend"
-RUN dotnet build "GamebookApp.Backend.csproj" -c Release -o /app/build
+WORKDIR "/src/GamebookApp.Server"
+RUN dotnet build "./GamebookApp.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish
+# This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
-RUN dotnet publish "GamebookApp.Backend.csproj" -c Release -o /app/publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./GamebookApp.Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Final stage/image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-# Create a non-root user to run the app
-RUN adduser --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
-
-# Make sure we can write to /data as specified in the requirements
-VOLUME ["/data"]
-RUN mkdir -p /data && chown -R appuser /data
-
-# Add PostgreSQL client libraries
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
-
-EXPOSE 80
-EXPOSE 443
-ENTRYPOINT ["dotnet", "GamebookApp.Backend.dll"]
+ENTRYPOINT ["dotnet", "GamebookApp.Server.dll"]
