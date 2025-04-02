@@ -69,5 +69,6 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<AppDbContext>();
     SeedData.Initialize(context);
 }
+app.MapFallbackToFile("index.html");
 
 app.Run();
