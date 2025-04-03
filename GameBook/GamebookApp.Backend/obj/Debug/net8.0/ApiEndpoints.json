@@ -32,7 +32,53 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "GamebookApp.Backend.Controllers.PlayersController",
+    "ContainingType": "PlayersController",
+    "Method": "GetPlayers",
+    "RelativePath": "api/Players",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[GamebookApp.Backend.Models.Player, GamebookApp.Backend, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "PlayersController",
+    "Method": "CreatePlayer",
+    "RelativePath": "api/Players",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "player",
+        "Type": "GamebookApp.Backend.Models.Player",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GamebookApp.Backend.Models.Player",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "PlayersController",
     "Method": "GetPlayer",
     "RelativePath": "api/Players/{id}",
     "HttpMethod": "GET",
@@ -58,7 +104,44 @@
     ]
   },
   {
-    "ContainingType": "GamebookApp.Backend.Controllers.PlayersController",
+    "ContainingType": "PlayersController",
+    "Method": "UpdatePlayer",
+    "RelativePath": "api/Players/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "player",
+        "Type": "GamebookApp.Backend.Models.Player",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PlayersController",
+    "Method": "DeletePlayer",
+    "RelativePath": "api/Players/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "PlayersController",
     "Method": "UpdatePlayerHp",
     "RelativePath": "api/Players/{id}/hp",
     "HttpMethod": "PUT",
@@ -72,14 +155,14 @@
       },
       {
         "Name": "model",
-        "Type": "GamebookApp.Backend.Controllers.UpdateHpModel",
+        "Type": "UpdateHpModel",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "GamebookApp.Backend.Controllers.PlayersController",
+    "ContainingType": "PlayersController",
     "Method": "MovePlayer",
     "RelativePath": "api/Players/{id}/move/{roomId}",
     "HttpMethod": "PUT",
@@ -100,7 +183,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "GamebookApp.Backend.Controllers.PlayersController",
+    "ContainingType": "PlayersController",
     "Method": "ResetPlayer",
     "RelativePath": "api/Players/{id}/reset",
     "HttpMethod": "PUT",
@@ -116,7 +199,7 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "GamebookApp.Backend.Controllers.RoomsController",
+    "ContainingType": "RoomsController",
     "Method": "GetRooms",
     "RelativePath": "api/Rooms",
     "HttpMethod": "GET",
@@ -136,7 +219,33 @@
     ]
   },
   {
-    "ContainingType": "GamebookApp.Backend.Controllers.RoomsController",
+    "ContainingType": "RoomsController",
+    "Method": "CreateRoom",
+    "RelativePath": "api/Rooms",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "room",
+        "Type": "GamebookApp.Backend.Models.Room",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GamebookApp.Backend.Models.Room",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "RoomsController",
     "Method": "GetRoom",
     "RelativePath": "api/Rooms/{id}",
     "HttpMethod": "GET",
@@ -160,5 +269,42 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "RoomsController",
+    "Method": "UpdateRoom",
+    "RelativePath": "api/Rooms/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "room",
+        "Type": "GamebookApp.Backend.Models.Room",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "RoomsController",
+    "Method": "DeleteRoom",
+    "RelativePath": "api/Rooms/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   }
 ]
