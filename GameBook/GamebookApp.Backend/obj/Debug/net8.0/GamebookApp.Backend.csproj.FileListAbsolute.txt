@@ -860,3 +860,15 @@ C:\Users\setra\Downloads\GamebookApp.Backend\GamebookApp.Backend\GamebookApp.Bac
 C:\Users\setra\Downloads\GamebookApp.Backend\GamebookApp.Backend\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.pdb
 C:\Users\setra\Downloads\GamebookApp.Backend\GamebookApp.Backend\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.genruntimeconfig.cache
 C:\Users\setra\Downloads\GamebookApp.Backend\GamebookApp.Backend\GamebookApp.Backend\obj\Debug\net8.0\ref\GamebookApp.Backend.dll
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.csproj.AssemblyReference.cache
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\spa.proxy.json
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.AssemblyInfoInputs.cache
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.AssemblyInfo.cs
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.csproj.CoreCompileInputs.cache
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.sourcelink.json
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.dll
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\refint\GamebookApp.Backend.dll
+C:\Users\david.udic.022\Source\Repos\2024-p3a-web-gamebook-belohlavi-udicdd\GameBook\GamebookApp.Backend\obj\Debug\net8.0\GamebookApp.Backend.pdb

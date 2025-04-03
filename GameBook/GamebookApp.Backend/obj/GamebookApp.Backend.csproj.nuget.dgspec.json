@@ -1,21 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\david.udic.022\\source\\repos\\2024-p3a-web-gamebook-belohlavi-udic\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj": {}
+    "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\david.udic.022\\source\\repos\\2024-p3a-web-gamebook-belohlavi-udic\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj": {
+    "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\david.udic.022\\source\\repos\\2024-p3a-web-gamebook-belohlavi-udic\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj",
+        "projectUniqueName": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj",
         "projectName": "GamebookApp.Backend",
-        "projectPath": "C:\\Users\\david.udic.022\\source\\repos\\2024-p3a-web-gamebook-belohlavi-udic\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj",
+        "projectPath": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\GamebookApp.Backend.csproj",
         "packagesPath": "C:\\Users\\david.udic.022\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\david.udic.022\\source\\repos\\2024-p3a-web-gamebook-belohlavi-udic\\GameBook\\GamebookApp.Backend\\obj\\",
+        "outputPath": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
           "C:\\Users\\david.udic.022\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -69,6 +68,10 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -107,7 +110,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

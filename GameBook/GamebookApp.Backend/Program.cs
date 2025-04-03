@@ -8,7 +8,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=/data/gamebook.db"));
+   options.UseSqlite("Data Source=/data/gamebook.db"));
 
 builder.Services.AddControllers();
 
@@ -67,7 +67,6 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<AppDbContext>();
-    SeedData.Initialize(context);
 }
 app.MapFallbackToFile("index.html");
 
