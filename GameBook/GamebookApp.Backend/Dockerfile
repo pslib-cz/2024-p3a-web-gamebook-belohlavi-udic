@@ -16,7 +16,10 @@ WORKDIR /src
 COPY ["GameBook/GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Backend/"]
 COPY ["GameBook/gamebook.client/gamebook.client.esproj", "gamebook.client/"]
 RUN dotnet restore "GamebookApp.Backend/GamebookApp.Backend.csproj"
+COPY ["GameBook/gamebook.client/package.json", "gamebook.client/"]
 COPY . .
+WORKDIR /src/gamebook.client
+RUN npm install
 WORKDIR "/src/GamebookApp.Backend"
 RUN dotnet build "./GamebookApp.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
