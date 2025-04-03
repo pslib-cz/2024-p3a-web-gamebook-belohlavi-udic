@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Dl0Zrfw6zsUlSQgQF/S4ZwW7KBz5VOOBQsBA7aNRkGA=",
+  "Hash": "Boq6xh2y7Y64nM5ilIey93H0DpK5aNCRRiOgF+UMlUc=",
   "Source": "GamebookApp.Backend",
   "BasePath": "_content/GamebookApp.Backend",
   "Mode": "Default",
@@ -28,6 +28,44 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\assets\\index-Cnv3a5rx.css",
+      "SourceId": "GamebookApp.Backend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\",
+      "BasePath": "_content/GamebookApp.Backend",
+      "RelativePath": "assets/index-Cnv3a5rx.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\index-Cnv3a5rx.css"
+    },
+    {
+      "Identity": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\assets\\index-DMSM-ENy.js",
+      "SourceId": "GamebookApp.Backend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\",
+      "BasePath": "_content/GamebookApp.Backend",
+      "RelativePath": "assets/index-DMSM-ENy.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\index-DMSM-ENy.js"
+    },
     {
       "Identity": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\images\\bazina.webp",
       "SourceId": "GamebookApp.Backend",
@@ -217,6 +255,44 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\vodopad.webp"
+    },
+    {
+      "Identity": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\index.html",
+      "SourceId": "GamebookApp.Backend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\",
+      "BasePath": "_content/GamebookApp.Backend",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\vite.svg",
+      "SourceId": "GamebookApp.Backend",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\",
+      "BasePath": "_content/GamebookApp.Backend",
+      "RelativePath": "vite.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\vite.svg"
     }
   ]
 }

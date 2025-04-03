@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GamebookApp.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+07b407bd759584e66b8ef9fa0d227ab65b6541bd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33a2b735e93f3ab817a5e1f6db79f2001de09e17")]
 [assembly: System.Reflection.AssemblyProductAttribute("GamebookApp.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GamebookApp.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

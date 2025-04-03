@@ -1,6 +1,14 @@
 {
   "Files": [
     {
+      "Id": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\assets\\index-Cnv3a5rx.css",
+      "PackagePath": "staticwebassets\\assets\\index-Cnv3a5rx.css"
+    },
+    {
+      "Id": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\assets\\index-DMSM-ENy.js",
+      "PackagePath": "staticwebassets\\assets\\index-DMSM-ENy.js"
+    },
+    {
       "Id": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\images\\JungeMainPage.webp",
       "PackagePath": "staticwebassets\\images\\JungeMainPage.webp"
     },
@@ -39,6 +47,14 @@
     {
       "Id": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\images\\vodopad.webp",
       "PackagePath": "staticwebassets\\images\\vodopad.webp"
+    },
+    {
+      "Id": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "C:\\Users\\david.udic.022\\Source\\Repos\\2024-p3a-web-gamebook-belohlavi-udicdd\\GameBook\\GamebookApp.Backend\\wwwroot\\vite.svg",
+      "PackagePath": "staticwebassets\\vite.svg"
     },
     {
       "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.GamebookApp.Backend.Microsoft.AspNetCore.StaticWebAssets.props",
