@@ -12,18 +12,18 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 RUN apt update && apt install nodejs npm -y
 RUN mkdir -p ~/.aspnet/https
-WORKDIR /src/Gamebook
-COPY ["GameBook/GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Server/"]
+WORKDIR /src
+COPY ["GameBook/GamebookApp.Backend/GamebookApp.Backend.csproj", "GamebookApp.Backend/"]
 COPY ["GameBook/gamebook.client/gamebook.client.esproj", "gamebook.client/"]
-RUN dotnet restore "GamebookApp.Server/GamebookApp.Backend.csproj"
+RUN dotnet restore "GamebookApp.Backend/GamebookApp.Backend.csproj"
 COPY . .
-WORKDIR "/src/GamebookApp/GamebookApp.Server"
-RUN dotnet build "GamebookApp.Server/GamebookApp.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/GamebookApp.Backend"
+RUN dotnet build "./GamebookApp.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "GamebookApp.Server/GamebookApp.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./GamebookApp.Backend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
