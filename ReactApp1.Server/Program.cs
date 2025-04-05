@@ -67,6 +67,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Initialize database
+/*
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -82,5 +83,6 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred during migration.");
     }
 }
+*/
 
 app.Run();
