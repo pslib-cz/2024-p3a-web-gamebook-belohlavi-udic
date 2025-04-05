@@ -1,0 +1,190 @@
+.container {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.backgroundImage {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://localhost:7247/images/JungeMainPage.webp');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.7);
+    transition: filter 0.3s ease;
+}
+
+    .backgroundImage::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%);
+    }
+
+.contentOverlay {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+}
+
+.title {
+    font-family: 'Cinzel', serif;
+    font-size: 4.5rem;
+    color: var(--accent-gold);
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 0 20px rgba(0,0,0,0.5);
+    animation: titleGlow 2s infinite alternate;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    max-width: 600px;
+}
+
+.buttonsContainer {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.button {
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.playButton {
+    composes: button;
+    background-color: var(--accent-gold);
+    color: #000;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+    .playButton:hover {
+        background-color: var(--warning);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+.infoButton {
+    composes: button;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+    .infoButton:hover {
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-2px);
+    }
+
+.logoutButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 20;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .logoutButton:hover {
+        background-color: #C82333;
+        transform: translateY(-1px);
+    }
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.modalContent {
+    background-color: white;
+    color: black;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: slideIn 0.3s ease;
+}
+
+.modalTitle {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #2C3E50;
+}
+
+.modalText {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: #34495E;
+}
+
+.modalClose {
+    background-color: var(--accent-gold);
+    color: black;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+    .modalClose:hover {
+        background-color: var(--warning);
+        transform: translateY(-1px);
+    }
+
+@keyframes titleGlow {
+    from {
+        text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 0 20px rgba(255,215,0,0.2);
+    }
+
+    to {
+        text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 0 30px rgba(255,215,0,0.6);
+    }
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 3rem;
+    }
+
+    .buttonsContainer {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}

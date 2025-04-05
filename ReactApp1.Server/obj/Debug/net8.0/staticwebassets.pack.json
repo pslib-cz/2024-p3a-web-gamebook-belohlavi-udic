@@ -1,0 +1,65 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\JungeMainPage.webp",
+      "PackagePath": "staticwebassets\\images\\JungeMainPage.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\KaputScreen2.webp",
+      "PackagePath": "staticwebassets\\images\\KaputScreen2.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\SucessScreen.webp",
+      "PackagePath": "staticwebassets\\images\\SucessScreen.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\bazina.webp",
+      "PackagePath": "staticwebassets\\images\\bazina.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\lesnicesta.webp",
+      "PackagePath": "staticwebassets\\images\\lesnicesta.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\medved.webp",
+      "PackagePath": "staticwebassets\\images\\medved.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\reka.webp",
+      "PackagePath": "staticwebassets\\images\\reka.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\startovnitabor.webp",
+      "PackagePath": "staticwebassets\\images\\startovnitabor.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\starymost.webp",
+      "PackagePath": "staticwebassets\\images\\starymost.webp"
+    },
+    {
+      "Id": "C:\\Users\\Dav1d\\source\\repos\\ReactApp1\\ReactApp1.Server\\wwwroot\\images\\vodopad.webp",
+      "PackagePath": "staticwebassets\\images\\vodopad.webp"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ReactApp1.Server.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.ReactApp1.Server.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.ReactApp1.Server.props",
+      "PackagePath": "build\\ReactApp1.Server.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.ReactApp1.Server.props",
+      "PackagePath": "buildMultiTargeting\\ReactApp1.Server.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.ReactApp1.Server.props",
+      "PackagePath": "buildTransitive\\ReactApp1.Server.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
