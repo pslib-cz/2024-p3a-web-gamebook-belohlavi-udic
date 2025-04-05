@@ -9,7 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 RUN apt update && apt install nodejs npm -y
 WORKDIR /src
 COPY ["ReactApp1.Server/ReactApp1.Server.csproj", "ReactApp1.Server/"]
-COPY ["ReactApp1.client/ReactApp1.client.esproj", "ReactApp1.client/"]
+COPY ["reactApp1.client/reactApp1.client.esproj", "reactApp1.client/"]
 RUN dotnet restore "ReactApp1.Server/ReactApp1.Server.csproj"
 COPY . .
 WORKDIR "/src/ReactApp1.Server"
