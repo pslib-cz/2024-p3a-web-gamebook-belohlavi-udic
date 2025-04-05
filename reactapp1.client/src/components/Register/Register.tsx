@@ -6,9 +6,9 @@ import AuthForm from '../AuthForm/AuthForm';
 import FormGroup from '../UI/FormGroup/FormGroup';
 import styles from '../AuthForm/AuthForm.module.css';
 
-interface RegisterError {
-    message: string;
-}
+// interface RegisterError {
+//     message: string;
+// }
 
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -22,15 +22,15 @@ const Register: React.FC = () => {
         setError(null);
 
         if (password !== confirmPassword) {
-            setError('Hesla se neshodují');
+            setError('Hesla se neshodujï¿½');
             return;
         }
 
         try {
-            // Upravené požadavky na backend - malá písmena
+            // Upravenï¿½ poï¿½adavky na backend - malï¿½ pï¿½smena
             await api.post('/auth/register', {
-                username: username,      // zmìnìno z Username
-                passwordHash: password   // zmìnìno z PasswordHash
+                username: username,      // zmï¿½nï¿½no z Username
+                passwordHash: password   // zmï¿½nï¿½no z PasswordHash
             });
             navigate('/login');
         } catch (error) {
@@ -39,17 +39,17 @@ const Register: React.FC = () => {
                 const axiosError = error as AxiosError<any>;
                 const errorMessage = typeof axiosError.response?.data === 'string'
                     ? axiosError.response.data
-                    : 'Registrace selhala. Uživatelské jméno mùže být již obsazené.';
+                    : 'Registrace selhala. Uï¿½ivatelskï¿½ jmï¿½no mï¿½ï¿½e bï¿½t jiï¿½ obsazenï¿½.';
                 setError(errorMessage);
             } else {
-                setError('Došlo k neoèekávané chybì');
+                setError('Doï¿½lo k neoï¿½ekï¿½vanï¿½ chybï¿½');
             }
         }
     };
 
     const footerContent = (
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            Již máte úèet?{" "}
+            Jiï¿½ mï¿½te ï¿½ï¿½et?{" "}
             <button
                 onClick={() => navigate("/login")}
                 style={{
@@ -60,7 +60,7 @@ const Register: React.FC = () => {
                     textDecoration: 'underline'
                 }}
             >
-                Pøihlásit se
+                Pï¿½ihlï¿½sit se
             </button>
         </div>
     );
@@ -73,7 +73,7 @@ const Register: React.FC = () => {
             submitText="Zaregistrovat se"
             footer={footerContent}
         >
-            <FormGroup label="Uživatelské jméno" htmlFor="username">
+            <FormGroup label="Uï¿½ivatelskï¿½ jmï¿½no" htmlFor="username">
                 <input
                     type="text"
                     id="username"
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
                     required
                 />
             </FormGroup>
-            <FormGroup label="Potvrïte heslo" htmlFor="confirmPassword">
+            <FormGroup label="Potvrï¿½te heslo" htmlFor="confirmPassword">
                 <input
                     type="password"
                     id="confirmPassword"
