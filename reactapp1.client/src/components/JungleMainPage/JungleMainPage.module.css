@@ -8,7 +8,7 @@
 .backgroundImage {
     position: absolute;
     inset: 0;
-    background-image: url('https://localhost:7247/images/JungeMainPage.webp');
+    background-image: url('https://id-89.pslib.cloud/images/JungeMainPage.webp');
     background-size: cover;
     background-position: center;
     filter: brightness(0.7);

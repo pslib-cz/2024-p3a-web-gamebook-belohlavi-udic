@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const URL = 'https://localhost:7247';
+export const URL = 'https://id-89.pslib.cloud';
 
 const api = axios.create({
     baseURL: URL + '/api',
