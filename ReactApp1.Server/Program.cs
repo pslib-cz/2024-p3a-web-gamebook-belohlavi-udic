@@ -1,6 +1,7 @@
 using GamebookApp.Backend.Data;
 using GamebookApp.Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -84,5 +85,14 @@ using (var scope = app.Services.CreateScope())
     }
 }
 */
+var provider = new FileExtensionContentTypeProvider();
+
+provider.Mappings[".db"] = "application/octet-stream";
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
+
+app.MapFallbackToFile("/index.html");
 
 app.Run();
