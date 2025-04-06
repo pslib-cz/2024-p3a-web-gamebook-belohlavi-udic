@@ -9,9 +9,20 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=gamebook.db"));
+try
+{
+    // Add services to the container.
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseSqlite("Data Source=gamebook.db");
+            options.EnableDetailedErrors();
+        options.EnableSensitiveDataLogging();
+    });
+}
+catch(Exception e)
+{
+    Console.WriteLine(e);
+}
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

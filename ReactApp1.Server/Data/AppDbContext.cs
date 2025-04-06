@@ -19,5 +19,10 @@ namespace GamebookApp.Backend.Data
                 .WithOne(e => e.Room)
                 .HasForeignKey(e => e.RoomId);
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlite("Data Source=../data/gamebook.db");
+        }
     }
 }
