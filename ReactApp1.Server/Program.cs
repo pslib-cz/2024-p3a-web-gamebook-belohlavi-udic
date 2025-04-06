@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=https://id-89.pslib.cloud/gamebook.db"));
+    options.UseSqlite("Data Source=gamebook.db"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
