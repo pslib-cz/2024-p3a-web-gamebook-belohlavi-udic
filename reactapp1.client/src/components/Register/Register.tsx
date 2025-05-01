@@ -22,15 +22,15 @@ const Register: React.FC = () => {
         setError(null);
 
         if (password !== confirmPassword) {
-            setError('Hesla se neshoduj�');
+            setError('Hesla se neshodují'); // Corrected
             return;
         }
 
         try {
-            // Upraven� po�adavky na backend - mal� p�smena
+            // Upravené požadavky na backend - malá písmena // Corrected
             await api.post('/auth/register', {
-                username: username,      // zm�n�no z Username
-                passwordHash: password   // zm�n�no z PasswordHash
+                username: username,      // změněno z Username // Corrected
+                passwordHash: password   // změněno z PasswordHash // Corrected
             });
             navigate('/login');
         } catch (error) {
@@ -39,17 +39,17 @@ const Register: React.FC = () => {
                 const axiosError = error as AxiosError<any>;
                 const errorMessage = typeof axiosError.response?.data === 'string'
                     ? axiosError.response.data
-                    : 'Registrace selhala. U�ivatelsk� jm�no m��e b�t ji� obsazen�.';
+                    : 'Registrace selhala. Uživatelské jméno může být již obsazené.'; // Corrected
                 setError(errorMessage);
             } else {
-                setError('Do�lo k neo�ek�van� chyb�');
+                setError('Došlo k neočekávané chybě'); // Corrected
             }
         }
     };
 
     const footerContent = (
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            Ji� m�te ��et?{" "}
+            Již máte účet?{" "} {/* Corrected */}
             <button
                 onClick={() => navigate("/login")}
                 style={{
@@ -60,7 +60,7 @@ const Register: React.FC = () => {
                     textDecoration: 'underline'
                 }}
             >
-                P�ihl�sit se
+                Přihlásit se {/* Corrected */}
             </button>
         </div>
     );
@@ -73,7 +73,7 @@ const Register: React.FC = () => {
             submitText="Zaregistrovat se"
             footer={footerContent}
         >
-            <FormGroup label="U�ivatelsk� jm�no" htmlFor="username">
+            <FormGroup label="Uživatelské jméno" htmlFor="username"> {/* Corrected */}
                 <input
                     type="text"
                     id="username"
@@ -93,7 +93,7 @@ const Register: React.FC = () => {
                     required
                 />
             </FormGroup>
-            <FormGroup label="Potvr�te heslo" htmlFor="confirmPassword">
+            <FormGroup label="Potvrďte heslo" htmlFor="confirmPassword"> {/* Corrected */}
                 <input
                     type="password"
                     id="confirmPassword"

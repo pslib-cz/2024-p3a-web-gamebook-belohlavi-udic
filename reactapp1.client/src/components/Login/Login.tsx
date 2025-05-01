@@ -29,16 +29,16 @@ const Login: React.FC = () => {
             navigate('/main');
         } catch (err) {
             if (axios.isAxiosError(err) && err.response) {
-                setError(err.response.data || "P�ihl�en� selhalo");
+                setError(err.response.data || "Přihlášení selhalo"); // Corrected
             } else {
-                setError("Do�lo k neo�ek�van� chyb�");
+                setError("Došlo k neočekávané chybě"); // Corrected
             }
         }
     };
 
     const footerContent = (
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            Nem�te ��et?{" "}
+            Nemáte účet?{" "} {/* Corrected */}
             <button
                 onClick={() => navigate("/register")}
                 style={{
@@ -56,13 +56,13 @@ const Login: React.FC = () => {
 
     return (
         <AuthForm
-            title="P�ihl�en�"
+            title="Přihlášení" // Corrected
             onSubmit={handleSubmit}
             error={error}
-            submitText="P�ihl�sit se"
+            submitText="Přihlásit se" // Corrected
             footer={footerContent}
         >
-            <FormGroup label="U�ivatelsk� jm�no" htmlFor="username">
+            <FormGroup label="Uživatelské jméno" htmlFor="username"> {/* Corrected */}
                 <input
                     type="text"
                     id="username"

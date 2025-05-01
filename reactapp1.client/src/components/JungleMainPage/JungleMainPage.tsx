@@ -22,20 +22,20 @@ const JungleMainPage: React.FC = () => {
             <div className={styles.backgroundImage} />
 
             <button className={styles.logoutButton} onClick={handleLogout}>
-                Odhlásit se
+                OdhlÃ¡sit se
             </button>
 
             <div className={styles.contentOverlay}>
-                <h1 className={styles.title}>ÚTÌK Z DUNGLE</h1>
-                <p className={styles.subtitle}>Cílem hry je utéct z neprozkoumané dungle.</p>
+                <h1 className={styles.title}>ÃšTÄšK Z DÅ½UNGLE</h1> {/* Corrected */}
+                <p className={styles.subtitle}>CÃ­lem hry je utÃ©ct z neprozkoumanÃ© dÅ¾ungle.</p>
 
                 <div className={styles.buttonsContainer}>
                     <button onClick={startGame} className={styles.playButton}>
-                        Hrát
+                        HrÃ¡t
                     </button>
 
                     <button onClick={() => setShowInfo(true)} className={styles.infoButton}>
-                        Info o høe
+                        Info o hÅ™e {/* Corrected */}
                     </button>
                 </div>
             </div>
@@ -43,14 +43,14 @@ const JungleMainPage: React.FC = () => {
             {showInfo && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
-                        <h2 className={styles.modalTitle}>O høe</h2>
+                        <h2 className={styles.modalTitle}>O hÅ™e</h2> {/* Corrected */}
                         <p className={styles.modalText}>
-                            Vítejte v adventure høe Útìk z dungle! Vaším úkolem je najít cestu ven
-                            z nebezpeèné dungle. Budete èelit rùznım pøekákám a rozhodnutím,
-                            která ovlivní váš osud. Vybírejte moudøe!
+                            VÃ­tejte v adventure hÅ™e ÃštÄ›k z dÅ¾ungle! VaÅ¡Ã­m Ãºkolem je najÃ­t cestu ven {/* Corrected */}
+                            z nebezpeÄnÃ© dÅ¾ungle. Budete Äelit rÅ¯znÃ½m pÅ™ekÃ¡Å¾kÃ¡m a rozhodnutÃ­m, {/* Corrected */}
+                            kterÃ¡ ovlivnÃ­ vÃ¡Å¡ osud. VybÃ­rejte moudÅ™e! {/* Corrected */}
                         </p>
                         <button onClick={() => setShowInfo(false)} className={styles.modalClose}>
-                            Zavøít
+                            ZavÅ™Ã­t {/* Corrected */}
                         </button>
                     </div>
                 </div>

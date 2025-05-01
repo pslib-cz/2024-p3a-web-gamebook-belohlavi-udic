@@ -62,7 +62,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
                 };
                 setCurrentRoom(processedRoom);
 
-                if (processedRoom.name === "Jeskyn� s medv�dem") {
+                if (processedRoom.name === "Jeskyně s medvědem") { // Corrected
                     setIsFighting(true);
                     setBearHP(500);
                 } else {
@@ -136,7 +136,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     };
 
     useEffect(() => {
-        if (currentRoom?.name === "Jeskyn� s medv�dem" && player && player.hp > 0) {
+        if (currentRoom?.name === "Jeskyně s medvědem" && player && player.hp > 0) { // Corrected
             intervalRef.current = window.setInterval(async () => {
                 if (player) {
                     const newHp = player.hp - 10;

@@ -18,7 +18,7 @@ const Room: React.FC = () => {
 
     // Initialize button position
     useEffect(() => {
-        if (gameContext?.currentRoom?.name === "Jeskyn� s medv�dem" && gameContext.isFighting) {
+        if (gameContext?.currentRoom?.name === "Jeskyně s medvědem" && gameContext.isFighting) { // Corrected
             randomizeButtonPosition();;
         }
     }, [gameContext?.currentRoom?.name, gameContext?.isFighting]);
@@ -50,7 +50,7 @@ const Room: React.FC = () => {
     };
 
     if (!gameContext) {
-        return <div className={styles.loading}>Na��t�n�...</div>;
+        return <div className={styles.loading}>Načítání...</div>; // Corrected
     }
 
     const {
@@ -64,13 +64,13 @@ const Room: React.FC = () => {
         isFighting
     } = gameContext;
 
-    if (isLoading) return <div className={styles.loading}>Na��t�n� m�stnosti...</div>;
+    if (isLoading) return <div className={styles.loading}>Načítání místnosti...</div>; // Corrected
     if (error) return <div className={styles.error}>{error}</div>;
-    if (!currentRoom) return <div className={styles.error}>M�stnost nen� k dispozici.</div>;
+    if (!currentRoom) return <div className={styles.error}>Místnost není k dispozici.</div>; // Corrected
 
     const isGameOver = currentRoom.name === "Konec hry";
-    const isVictory = currentRoom.name === "Bezpe�n� z�na";
-    const isBearRoom = currentRoom.name === "Jeskyn� s medv�dem";
+    const isVictory = currentRoom.name === "Bezpečná zóna"; // Corrected
+    const isBearRoom = currentRoom.name === "Jeskyně s medvědem"; // Corrected
 
     const handleReturnToMenu = () => {
         navigate('/main');
@@ -78,14 +78,14 @@ const Room: React.FC = () => {
 
     const getDirectionIcon = (direction: string) => {
         switch (direction) {
-            case 'J�t na v�chod':
-            case 'P�ej�t most rychle':
+            case 'Jít na východ': // Corrected
+            case 'Přejít most rychle': // Corrected
                 return <MoveRight className={styles.directionIcon} size={32} />;
-            case 'J�t na z�pad':
-            case 'Vr�tit se':
-            case 'Oto�it se a j�t zp�t':
+            case 'Jít na západ': // Corrected
+            case 'Vrátit se': // Corrected
+            case 'Otočit se a jít zpět': // Corrected
                 return <MoveLeft className={styles.directionIcon} size={32} />;
-            case 'P�esko�it past':
+            case 'Přeskočit past': // Corrected
                 return <ArrowUp className={styles.directionIcon} size={32} />;
             default:
                 return <MoveHorizontal className={styles.directionIcon} size={32} />;
@@ -107,9 +107,9 @@ const Room: React.FC = () => {
                     <div>
                         {isBearRoom && isFighting ? (
                             <>
-                                <p className={styles.warningText}>SOUBOJ S MEDV�DEM!</p>
+                                <p className={styles.warningText}>SOUBOJ S MEDVĚDEM!</p> {/* Corrected */}
                                 <p className={styles.combatDescription}>
-                                    Ka�dou sekundu ztr�c� 10 HP! �tok zp�sob� 40-60 po�kozen� medv�dovi.
+                                    Každou sekundu ztrácí 10 HP! Útok způsobí 40-60 poškození medvědovi. {/* Corrected */}
                                 </p>
                                 <div className={styles.bearFightContainer}>
                                     <button
@@ -123,14 +123,14 @@ const Room: React.FC = () => {
                                         }}
                                     >
                                         <Swords className={styles.fightIcon} size={24} />
-                                        <span>�tok! (-40-60 HP)</span>
+                                        <span>Útok! (-40-60 HP)</span> {/* Corrected */}
                                     </button>
                                 </div>
                             </>
                         ) : (
                             currentRoom.exits && currentRoom.exits.length > 0 && (
                                 <>
-                                    <p className={styles.warningText}>VYBER SI POKRA�OV�N� HRY</p>
+                                    <p className={styles.warningText}>VYBER SI POKRAČOVÁNÍ HRY</p> {/* Corrected */}
                                     <div className={styles.exitsGrid}>
                                         {currentRoom.exits.map((exit: Exit) => (
                                             <button
@@ -157,7 +157,7 @@ const Room: React.FC = () => {
                     {isGameOver && (
                         <button onClick={resetGame} className={styles.restartButton}>
                             <RefreshCw className={styles.restartIcon} size={24} />
-                            <span>Za��t znovu</span>
+                            <span>Začít znovu</span> {/* Corrected */}
                         </button>
                     )}
 
@@ -165,11 +165,11 @@ const Room: React.FC = () => {
                         <>
                             <button onClick={handleReturnToMenu} className={styles.menuButton}>
                                 <Home className={styles.menuIcon} size={24} />
-                                <span>Zp�t do menu</span>
+                                <span>Zpět do menu</span> {/* Corrected */}
                             </button>
                             <button onClick={resetGame} className={styles.restartButton}>
                                 <RefreshCw className={styles.restartIcon} size={24} />
-                                <span>Hr�t znovu</span>
+                                <span>Hrát znovu</span> {/* Corrected */}
                             </button>
                         </>
                     )}
